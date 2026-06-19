@@ -156,7 +156,7 @@ export default function Layout({ children }) {
                 to="/ingresar"
                 className="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-xl text-sm font-medium text-tierra-700 hover:bg-tierra-50 transition-colors"
               >
-                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v1h20v-1c0-3.3-6.7-5-10-5z"/></svg>
+                <img src="/iconos/svg/09_usuario.svg" alt="" className="w-4 h-4" />
                 Ingresar
               </Link>
             )}
@@ -166,9 +166,7 @@ export default function Layout({ children }) {
               className="relative p-2 rounded-full hover:bg-tierra-50 transition-colors"
               aria-label={`Carrito (${totalItems} producto${totalItems !== 1 ? 's' : ''})`}
             >
-              <svg viewBox="0 0 24 24" className="w-6 h-6 fill-tierra-700">
-                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96C5 16.1 6.1 17 7 17h11v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63H19c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0023.45 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-              </svg>
+              <img src="/iconos/svg/07_carrito.svg" alt="" className="w-6 h-6" />
               {totalItems > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 bg-tierra-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center leading-none">
                   {totalItems > 9 ? '9+' : totalItems}

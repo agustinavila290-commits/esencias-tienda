@@ -34,8 +34,8 @@ export default function ProductCard({ producto }) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-5xl text-tierra-200">
-            🌿
+          <div className="w-full h-full flex items-center justify-center bg-tierra-50 p-8">
+            <img src="/iconos/svg/06_sahumerio.svg" alt="" className="w-full h-full object-contain opacity-20" />
           </div>
         )}
 

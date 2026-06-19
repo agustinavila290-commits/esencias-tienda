@@ -38,12 +38,12 @@ export default function SobreNosotros() {
           <h2 className="font-display text-xl font-bold text-tierra-800 mb-3">Nuestro proceso</h2>
           <div className="space-y-3">
             {[
-              { icon: '🌿', titulo: 'Ingredientes naturales', texto: 'Seleccionamos hierbas, resinas y esencias de origen natural, sin colorantes ni conservantes artificiales.' },
-              { icon: '🤲', titulo: 'Elaboración artesanal', texto: 'Cada pieza es elaborada a mano en pequeños lotes, garantizando calidad y atención al detalle.' },
-              { icon: '💫', titulo: 'Intención y cuidado', texto: 'Ponemos intención en cada creación para que llegue a tu hogar cargada de energía positiva.' },
-            ].map(({ icon, titulo, texto }) => (
+              { src: '/iconos/svg/01_ingredientes.svg', titulo: 'Ingredientes naturales', texto: 'Seleccionamos hierbas, resinas y esencias de origen natural, sin colorantes ni conservantes artificiales.' },
+              { src: '/iconos/svg/02_artesanal.svg',    titulo: 'Elaboración artesanal',  texto: 'Cada pieza es elaborada a mano en pequeños lotes, garantizando calidad y atención al detalle.' },
+              { src: '/iconos/svg/03_intencion.svg',    titulo: 'Intención y cuidado',    texto: 'Ponemos intención en cada creación para que llegue a tu hogar cargada de energía positiva.' },
+            ].map(({ src, titulo, texto }) => (
               <div key={titulo} className="flex items-start gap-3">
-                <span className="text-2xl flex-shrink-0">{icon}</span>
+                <img src={src} alt="" className="w-8 h-8 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="font-semibold text-gray-800 text-sm">{titulo}</p>
                   <p className="text-gray-500 text-sm leading-relaxed">{texto}</p>

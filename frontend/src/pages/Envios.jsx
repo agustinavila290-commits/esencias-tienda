@@ -5,7 +5,9 @@ function Seccion({ icono, titulo, children }) {
   return (
     <div className="bg-white rounded-2xl p-6 border border-tierra-100 shadow-sm">
       <div className="flex items-center gap-3 mb-4">
-        <span className="text-2xl">{icono}</span>
+        {typeof icono === 'string'
+          ? <span className="text-2xl">{icono}</span>
+          : icono}
         <h2 className="font-display text-xl font-bold text-tierra-800">{titulo}</h2>
       </div>
       {children}
@@ -28,7 +30,7 @@ export default function Envios() {
       <h1 className="font-display text-3xl font-bold text-tierra-800 mb-6">Envíos y medios de pago</h1>
 
       <div className="space-y-5">
-        <Seccion icono="🚚" titulo="Envíos">
+        <Seccion icono={<img src="/iconos/svg/04_envios.svg" alt="" className="w-8 h-8" />} titulo="Envíos">
           <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
             <p>Realizamos envíos a todo el país a través de correo y servicios de mensajería.</p>
             <div className="space-y-2">
@@ -52,7 +54,7 @@ export default function Envios() {
           </div>
         </Seccion>
 
-        <Seccion icono="💳" titulo="Medios de pago">
+        <Seccion icono={<img src="/iconos/svg/05_pago.svg" alt="" className="w-8 h-8" />} titulo="Medios de pago">
           <div className="space-y-3 text-sm text-gray-600">
             <div className="grid grid-cols-1 gap-2">
               {[

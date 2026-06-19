@@ -28,7 +28,10 @@ export default function Contacto() {
         Volver a la tienda
       </Link>
 
-      <h1 className="font-display text-3xl font-bold text-tierra-800 mb-6">Contacto</h1>
+      <div className="flex items-center gap-3 mb-6">
+        <img src="/iconos/svg/08_contacto.svg" alt="" className="w-9 h-9 flex-shrink-0" />
+        <h1 className="font-display text-3xl font-bold text-tierra-800">Contacto</h1>
+      </div>
 
       <div className="space-y-5">
         {/* Formulario */}
