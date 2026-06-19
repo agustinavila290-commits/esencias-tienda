@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-tierra-50 text-gray-800 font-sans;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-tierra-600 hover:bg-tierra-700 active:bg-tierra-800
+           text-white font-semibold py-3 px-6 rounded-xl
+           transition-all duration-150 min-h-[44px]
+           flex items-center justify-center gap-2;
+  }
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 active:bg-gray-100
+           text-tierra-700 font-semibold py-3 px-6 rounded-xl
+           border border-tierra-300 transition-all duration-150
+           min-h-[44px] flex items-center justify-center gap-2;
+  }
+  .btn-whatsapp {
+    @apply bg-green-500 hover:bg-green-600 active:bg-green-700
+           text-white font-bold py-4 px-6 rounded-xl
+           transition-all duration-150 min-h-[52px]
+           flex items-center justify-center gap-2 text-base;
+  }
+  .btn-mp {
+    @apply text-white font-bold py-4 px-6 rounded-xl
+           transition-all duration-150 min-h-[52px]
+           flex items-center justify-center gap-2 text-base;
+    background-color: #009EE3;
+  }
+  .btn-mp:hover  { background-color: #0081c2; }
+  .btn-mp:active { background-color: #006fa0; }
+  .btn-mp:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-tierra-100 overflow-hidden;
+  }
+  .input-field {
+    @apply w-full border border-gray-200 rounded-xl px-4 py-3
+           focus:outline-none focus:ring-2 focus:ring-tierra-400 focus:border-transparent
+           text-gray-800 bg-white min-h-[44px] transition-shadow;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Fade-in-up animation for product cards */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.35s ease-out both;
+}
+
+/* Bottom sheet animation */
+.bottom-sheet-enter {
+  transform: translateY(100%);
+}
+.bottom-sheet-enter-active {
+  transform: translateY(0);
+  transition: transform 300ms ease-out;
+}
+.bottom-sheet-exit-active {
+  transform: translateY(100%);
+  transition: transform 250ms ease-in;
+}

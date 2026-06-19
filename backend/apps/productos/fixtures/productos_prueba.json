@@ -1,0 +1,58 @@
+[
+  {
+    "model": "productos.producto",
+    "pk": 1,
+    "fields": {
+      "nombre": "Sahumerio de Lavanda",
+      "descripcion": "Relajante y purificador. Ideal para meditar y descansar.",
+      "precio": "1500.00",
+      "stock": 20,
+      "imagen": "",
+      "slug": "sahumerio-de-lavanda",
+      "activo": true,
+      "created_at": "2026-06-14T10:00:00Z"
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 2,
+    "fields": {
+      "nombre": "Incienso de Sándalo",
+      "descripcion": "Aroma suave y terroso. Perfecto para crear ambientes cálidos.",
+      "precio": "1200.00",
+      "stock": 15,
+      "imagen": "",
+      "slug": "incienso-de-sandalo",
+      "activo": true,
+      "created_at": "2026-06-14T10:00:00Z"
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 3,
+    "fields": {
+      "nombre": "Sahumerio de Rosa",
+      "descripcion": "Dulce y floral. Transmite amor y bienestar.",
+      "precio": "1800.00",
+      "stock": 3,
+      "imagen": "",
+      "slug": "sahumerio-de-rosa",
+      "activo": true,
+      "created_at": "2026-06-14T10:00:00Z"
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 4,
+    "fields": {
+      "nombre": "Incienso de Mirra",
+      "descripcion": "Intenso y místico. Utilizado en rituales de protección.",
+      "precio": "2000.00",
+      "stock": 0,
+      "imagen": "",
+      "slug": "incienso-de-mirra",
+      "activo": true,
+      "created_at": "2026-06-14T10:00:00Z"
+    }
+  }
+]

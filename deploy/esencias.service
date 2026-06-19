@@ -1,0 +1,39 @@
+# ==============================================================
+# systemd — Esencias de la naturaleza (Gunicorn en puerto 8001)
+# Copiar a: /etc/systemd/system/esencias.service
+# Activar:
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable esencias
+#   sudo systemctl start esencias
+# ==============================================================
+
+[Unit]
+Description=Esencias de la naturaleza — Backend Django (Gunicorn)
+After=network.target
+
+[Service]
+Type=notify
+
+User=root
+Group=www-data
+WorkingDirectory=/srv/esencias/backend
+
+EnvironmentFile=/srv/esencias/backend/.env
+
+ExecStart=/srv/esencias/venv/bin/gunicorn \
+    --workers 2 \
+    --worker-class sync \
+    --bind 127.0.0.1:8001 \
+    --timeout 120 \
+    --keep-alive 5 \
+    --log-level info \
+    --access-logfile /srv/esencias/backend/logs/gunicorn-access.log \
+    --error-logfile  /srv/esencias/backend/logs/gunicorn-error.log \
+    backend.wsgi:application
+
+Restart=on-failure
+RestartSec=5s
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

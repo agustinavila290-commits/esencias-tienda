@@ -1,0 +1,14 @@
+# Normalizar saltos de línea a LF en el servidor (Linux)
+* text=auto eol=lf
+
+# Binarios — no tocar
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.svg text eol=lf
