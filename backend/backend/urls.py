@@ -5,10 +5,11 @@ from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/auth/', include('apps.productos.auth_urls')),
-    path('api/', include('apps.productos.urls')),
-    path('api/', include('apps.pedidos.urls')),
+    path('django-admin/', admin.site.urls),
+    path('api/auth/',     include('apps.productos.auth_urls')),
+    path('api/',          include('apps.productos.urls')),
+    path('api/',          include('apps.pedidos.urls')),
+    path('api/usuarios/', include('apps.usuarios.urls')),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
 

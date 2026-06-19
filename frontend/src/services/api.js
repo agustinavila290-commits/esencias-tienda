@@ -59,4 +59,35 @@ export const authService = {
   me:      ()      => api.get('/auth/me/'),
 }
 
+// ── Instancia separada para usuarios públicos (usa usuario_token) ──────────
+
+const apiUsuario = axios.create({ baseURL: API_URL })
+
+apiUsuario.interceptors.request.use(config => {
+  const token = localStorage.getItem('usuario_token')
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
+
+apiUsuario.interceptors.response.use(
+  r => r,
+  err => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem('usuario_token')
+      localStorage.removeItem('usuario_refresh')
+    }
+    return Promise.reject(err)
+  }
+)
+
+export const usuariosService = {
+  registro:         (datos)      => apiUsuario.post('/usuarios/registro/', datos),
+  login:            (datos)      => apiUsuario.post('/usuarios/login/', datos),
+  loginGoogle:      (credential) => apiUsuario.post('/usuarios/google/', { credential }),
+  logout:           (datos)      => apiUsuario.post('/usuarios/logout/', datos),
+  me:               ()           => apiUsuario.get('/usuarios/me/'),
+  recuperarPassword:  (email)    => apiUsuario.post('/usuarios/recuperar-password/', { email }),
+  confirmarPassword:  (datos)    => apiUsuario.post('/usuarios/recuperar-password/confirmar/', datos),
+}
+
 export default api

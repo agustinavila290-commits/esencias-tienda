@@ -18,9 +18,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'apps.productos',
     'apps.pedidos',
+    'apps.usuarios',
 ]
 
 MIDDLEWARE = [
@@ -111,10 +113,21 @@ REST_FRAMEWORK = {
 
 # JWT
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=8),
+    'ACCESS_TOKEN_LIFETIME':  timedelta(hours=8),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': True,
+    'ROTATE_REFRESH_TOKENS':  True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
 }
+
+# Auth backends — permite login por email además del username por defecto
+AUTHENTICATION_BACKENDS = [
+    'apps.usuarios.backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+# Google OAuth
+GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID', default='')
 
 # CORS
 CORS_ALLOWED_ORIGINS = config(

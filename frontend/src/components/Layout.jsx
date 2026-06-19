@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { INSTAGRAM_URL, WHATSAPP_NUMBER } from '../config'
 import { useCarrito } from '../context/CarritoContext'
+import { useUsuario } from '../context/UsuarioContext'
 import Carrito from './Carrito'
 import BarraCarrito from './BarraCarrito'
 import BotonesFlotantes from './BotonesFlotantes'
@@ -53,7 +54,9 @@ function Footer() {
 
 export default function Layout({ children }) {
   const { totalItems, setAbierto } = useCarrito()
-  const [menuAbierto, setMenuAbierto] = useState(false)
+  const { usuario, logout }        = useUsuario()
+  const [menuAbierto, setMenuAbierto]   = useState(false)
+  const [userMenuAbierto, setUserMenu]  = useState(false)
   const location = useLocation()
 
   const isActive = (to) =>
@@ -98,7 +101,7 @@ export default function Layout({ children }) {
             ))}
           </nav>
 
-          {/* Right side: Instagram + Cart + Hamburger */}
+          {/* Right side: Instagram + User + Cart + Hamburger */}
           <div className="flex items-center gap-1 ml-auto">
             {INSTAGRAM_URL && (
               <a
@@ -121,6 +124,41 @@ export default function Layout({ children }) {
                   <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                 </svg>
               </a>
+            )}
+
+            {/* Cuenta de usuario */}
+            {usuario ? (
+              <div className="relative">
+                <button
+                  onClick={() => setUserMenu(v => !v)}
+                  className="flex items-center gap-1.5 px-2 py-1.5 rounded-xl hover:bg-tierra-50 transition-colors text-tierra-700"
+                  aria-label="Mi cuenta"
+                >
+                  <div className="w-7 h-7 rounded-full bg-tierra-200 flex items-center justify-center text-xs font-bold text-tierra-800">
+                    {usuario.nombre?.[0]?.toUpperCase() || '?'}
+                  </div>
+                  <span className="hidden sm:block text-sm font-medium max-w-[80px] truncate">{usuario.nombre}</span>
+                </button>
+                {userMenuAbierto && (
+                  <div className="absolute right-0 top-full mt-1 w-40 bg-white rounded-xl shadow-lg border border-tierra-100 py-1 z-50">
+                    <p className="px-3 py-2 text-xs text-tierra-500 border-b border-tierra-50 truncate">{usuario.email}</p>
+                    <button
+                      onClick={() => { logout(); setUserMenu(false) }}
+                      className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-xl transition-colors"
+                    >
+                      Cerrar sesión
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                to="/ingresar"
+                className="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-xl text-sm font-medium text-tierra-700 hover:bg-tierra-50 transition-colors"
+              >
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v1h20v-1c0-3.3-6.7-5-10-5z"/></svg>
+                Ingresar
+              </Link>
             )}
 
             <button
@@ -177,6 +215,22 @@ export default function Layout({ children }) {
                 {label}
               </Link>
             ))}
+            {usuario ? (
+              <button
+                onClick={() => { logout(); setMenuAbierto(false) }}
+                className="block w-full text-left py-3 px-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+              >
+                Cerrar sesión ({usuario.nombre})
+              </button>
+            ) : (
+              <Link
+                to="/ingresar"
+                onClick={() => setMenuAbierto(false)}
+                className="block py-3 px-3 rounded-xl text-sm font-medium text-tierra-700 hover:bg-tierra-50 transition-colors"
+              >
+                Iniciar sesión
+              </Link>
+            )}
           </nav>
         )}
       </header>
