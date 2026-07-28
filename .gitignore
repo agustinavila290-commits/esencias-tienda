@@ -25,6 +25,10 @@ frontend/dist/
 frontend/.env
 frontend/.env.local
 
+# Releases atómicos del frontend en el servidor (deploy/update.sh)
+frontend/releases/
+frontend/current
+
 # Next.js (carpeta legacy)
 tienda-sahumerios/
 
