@@ -13,6 +13,7 @@ urlpatterns = [
     path('api/',          include('apps.productos.urls')),
     path('api/',          include('apps.pedidos.urls')),
     path('api/usuarios/', include('apps.usuarios.urls')),
+    path('api/',          include('apps.metricas.urls')),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/health/',       health_live,  name='health-live'),
     path('api/health/ready/', health_ready, name='health-ready'),

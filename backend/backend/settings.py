@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'apps.productos',
     'apps.pedidos',
     'apps.usuarios',
+    'apps.metricas',
 ]
 
 MIDDLEWARE = [
@@ -191,6 +192,10 @@ if not DEBUG:
     # .env una vez confirmado que todo el sitio funciona bien en HTTPS.
     SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=604800, cast=int)
     SECURE_HSTS_INCLUDE_SUBDOMAINS = config('SECURE_HSTS_INCLUDE_SUBDOMAINS', default=False, cast=bool)
+
+# Métricas comerciales — anónimas, sin cookies ni datos personales (ver
+# apps/metricas). Apagado por defecto: hay que decidirlo explícitamente.
+METRICAS_HABILITADAS = config('METRICAS_HABILITADAS', default=False, cast=bool)
 
 # WhatsApp
 WHATSAPP_NUMBER = config('WHATSAPP_NUMBER', default='549XXXXXXXXXX')
