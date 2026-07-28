@@ -1,0 +1,21 @@
+# ==============================================================
+# systemd timer — corre vencer-pedidos.service cada 5 minutos
+# Copiar a: /etc/systemd/system/vencer-pedidos.timer
+# Activar:
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now vencer-pedidos.timer
+# Verificar:
+#   systemctl list-timers | grep vencer-pedidos
+#   journalctl -u vencer-pedidos.service -n 50
+# ==============================================================
+
+[Unit]
+Description=Corre vencer-pedidos.service cada 5 minutos
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+Unit=vencer-pedidos.service
+
+[Install]
+WantedBy=timers.target

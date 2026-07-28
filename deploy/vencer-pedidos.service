@@ -1,0 +1,17 @@
+# ==============================================================
+# systemd oneshot — vence reservas de pedidos pendientes expiradas
+# Copiar a: /etc/systemd/system/vencer-pedidos.service
+# Se dispara desde vencer-pedidos.timer (no se activa/inicia directo).
+# ==============================================================
+
+[Unit]
+Description=Esencias de la naturaleza — marcar pedidos vencidos (manage.py vencer_pedidos)
+After=network.target
+
+[Service]
+Type=oneshot
+User=root
+Group=www-data
+WorkingDirectory=/srv/esencias/backend
+EnvironmentFile=/srv/esencias/backend/.env
+ExecStart=/srv/esencias/venv/bin/python manage.py vencer_pedidos
