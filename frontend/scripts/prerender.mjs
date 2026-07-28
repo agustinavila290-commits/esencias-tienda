@@ -31,7 +31,13 @@ import { preview } from 'vite'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DIST_DIR = path.resolve(__dirname, '..', 'dist')
 const API_URL = (process.env.VITE_API_URL || 'http://localhost:8001/api').replace(/\/$/, '')
-const RUTAS_ESTATICAS = ['/', '/sobre-nosotros', '/envios', '/contacto']
+const RUTAS_ESTATICAS = [
+  '/', '/sobre-nosotros', '/envios', '/contacto',
+  '/preguntas-frecuentes', '/como-comprar',
+  // Términos y Privacidad son `noindex`, pero igual conviene prerenderizarlas:
+  // sin esto, un bot que no ejecuta JS nunca vería la etiqueta noindex.
+  '/terminos', '/privacidad',
+]
 
 async function obtenerRutasDinamicas() {
   const rutas = []
