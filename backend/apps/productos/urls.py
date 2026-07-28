@@ -5,6 +5,7 @@ urlpatterns = [
     # Públicos
     path('categorias/', views.categorias_list, name='categorias-list'),
     path('productos/', views.productos_list, name='productos-list'),
+    path('productos/slug/<slug:slug>/', views.producto_por_slug, name='producto-por-slug'),
     path('productos/<int:pk>/', views.producto_detail, name='producto-detail'),
 
     # Admin — categorías

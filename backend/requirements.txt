@@ -12,3 +12,9 @@ whitenoise==6.8.2
 psycopg[binary]==3.2.3
 mercadopago==3.2.0
 google-auth>=2.37.0
+
+# Opcionales — solo hacen falta si se configura la variable de entorno
+# correspondiente (REDIS_URL / SENTRY_DSN). Sin esa variable, Django ni
+# siquiera intenta importarlos.
+django-redis==5.4.0
+sentry-sdk==2.19.2

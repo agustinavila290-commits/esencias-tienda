@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
@@ -146,6 +147,10 @@ class GoogleAuthViewTest(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.url = '/api/usuarios/google/'
+        cache.clear()
+
+    def tearDown(self):
+        cache.clear()
 
     @patch('apps.usuarios.views._verify_google_token')
     def test_google_login_crea_usuario_nuevo(self, mock_verify):
@@ -178,6 +183,29 @@ class GoogleAuthViewTest(TestCase):
     def test_token_invalido_retorna_400(self, mock_verify):
         r = self.client.post(self.url, {'credential': 'invalido'})
         self.assertEqual(r.status_code, 400)
+
+
+@override_settings(GOOGLE_CLIENT_ID='fake-client-id-for-tests')
+class GoogleAuthRateLimitTest(TestCase):
+    """Aislada en su propia clase (limpia el cache antes y después) para no
+    contaminar el conteo de rate limit de GoogleAuthViewTest ni de otras
+    clases que compartan el mismo proceso de test."""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.url = '/api/usuarios/google/'
+        cache.clear()
+
+    def tearDown(self):
+        cache.clear()
+
+    @patch('apps.usuarios.views._verify_google_token', side_effect=Exception('invalid token'))
+    def test_bloquea_pasado_el_limite(self, mock_verify):
+        for _ in range(15):
+            r = self.client.post(self.url, {'credential': 'x'})
+            self.assertEqual(r.status_code, 400)
+        r = self.client.post(self.url, {'credential': 'x'})
+        self.assertEqual(r.status_code, 429)
 
 
 class RecuperarPasswordViewTest(TestCase):

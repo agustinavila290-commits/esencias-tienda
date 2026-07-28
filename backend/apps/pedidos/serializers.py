@@ -27,7 +27,7 @@ class PedidoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pedido
         fields = [
-            'id', 'codigo',
+            'id', 'codigo', 'tracking_token',
             'cliente_nombre', 'cliente_email', 'cliente_telefono', 'cliente_direccion',
             'estado', 'metodo_pago', 'total',
             'expires_at', 'created_at', 'vigente', 'minutos_restantes',

@@ -1,5 +1,6 @@
 import random
 import string
+import uuid
 from django.db import models
 
 
@@ -18,6 +19,11 @@ class Pedido(models.Model):
         ('vencido',    'Vencido'),
     ]
     codigo            = models.CharField(max_length=20, unique=True, default=_generar_codigo, verbose_name='Código')
+    tracking_token    = models.UUIDField(
+        default=uuid.uuid4, unique=True, editable=False, db_index=True,
+        verbose_name='Token de seguimiento',
+        help_text='Token público impredecible para consultar el pedido sin autenticarse (junto con el código).'
+    )
     cliente_nombre    = models.CharField(max_length=150, blank=True, verbose_name='Nombre')
     cliente_email     = models.EmailField(blank=True, verbose_name='Email')
     cliente_telefono  = models.CharField(max_length=30, blank=True, verbose_name='Teléfono')
@@ -39,6 +45,12 @@ class Pedido(models.Model):
         verbose_name = 'Pedido'
         verbose_name_plural = 'Pedidos'
         ordering = ['-created_at']
+        indexes = [
+            # Cubre el filtro más frecuente del sistema: pedidos pendientes
+            # según su vencimiento (crear_reserva, stock_disponible, webhook
+            # de MP, comando vencer_pedidos).
+            models.Index(fields=['estado', 'expires_at'], name='pedido_estado_expira_idx'),
+        ]
 
     def __str__(self):
         return f'{self.codigo} — {self.get_estado_display()}'

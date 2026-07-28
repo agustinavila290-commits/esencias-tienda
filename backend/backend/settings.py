@@ -97,6 +97,26 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Cache — usada para rate limiting (ver backend/rate_limit.py) y la caché
+# corta de /api/categorias/. En un solo proceso de desarrollo, memoria local
+# alcanza. En producción con más de un worker de Gunicorn, cada worker tendría
+# su propia memoria y el rate limit/caché no se compartiría entre ellos — para
+# eso, configurar REDIS_URL (requiere `pip install django-redis`, ya listado
+# como opcional en requirements.txt) y listo, sin tocar código.
+REDIS_URL = config('REDIS_URL', default='')
+if REDIS_URL:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': REDIS_URL,
+            'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
+        }
+    }
+else:
+    CACHES = {
+        'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}
+    }
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # REST Framework
@@ -134,6 +154,43 @@ CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS', default='http://localhost:5174'
 ).split(',')
 CORS_ALLOW_ALL_ORIGINS = DEBUG
+# Necesario para que el navegador mande/reciba la cookie HttpOnly del refresh
+# token del admin. django-cors-headers automáticamente deja de mandar "*" en
+# Access-Control-Allow-Origin cuando esto está en True (manda el origin exacto),
+# así que sigue siendo seguro combinado con CORS_ALLOW_ALL_ORIGINS en dev.
+CORS_ALLOW_CREDENTIALS = True
+
+# CSRF — dominios desde los que se acepta un POST con cookies (mismo dominio
+# real en producción gracias al proxy de Nginx; en dev, orígenes del front).
+CSRF_TRUSTED_ORIGINS = config(
+    'CSRF_TRUSTED_ORIGINS', default='http://localhost:5174,http://localhost:5175'
+).split(',')
+
+# Cabeceras de seguridad. Estas aplican a lo que responde Django directamente
+# (API JSON, /django-admin/) — el HTML de la SPA de React lo sirve Nginx en
+# producción, así que su Content-Security-Policy se define en
+# deploy/nginx-esencias.conf, no acá.
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+X_FRAME_OPTIONS = 'DENY'
+
+if not DEBUG:
+    # Cookies de sesión/CSRF de Django (no confundir con la cookie propia
+    # admin_refresh_token, que ya se marca Secure fuera de DEBUG en
+    # apps/productos/auth_views.py).
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    # SECURE_SSL_REDIRECT queda apagado por defecto: Nginx ya redirige
+    # HTTP→HTTPS antes de que la request llegue a Django (ver
+    # deploy/nginx-esencias.conf). Si se activa acá también, Django necesita
+    # confiar en el header que manda Nginx para saber que la conexión ya es
+    # HTTPS, o entra en loop de redirects.
+    SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    # HSTS: arranca en un valor conservador (1 semana) y se puede subir desde
+    # .env una vez confirmado que todo el sitio funciona bien en HTTPS.
+    SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=604800, cast=int)
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = config('SECURE_HSTS_INCLUDE_SUBDOMAINS', default=False, cast=bool)
 
 # WhatsApp
 WHATSAPP_NUMBER = config('WHATSAPP_NUMBER', default='549XXXXXXXXXX')
@@ -151,6 +208,37 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='')
+
+# Logging — necesario para que los logger.info/warning/error de las apps
+# (webhook de MP, vencer_pedidos, etc.) se vean en consola (dev) o en el
+# log de Gunicorn (prod, vía journalctl/--error-logfile).
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '[{asctime}] {levelname} {name}: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+    },
+}
 
 # Jazzmin — panel de admin mejorado
 JAZZMIN_SETTINGS = {
@@ -172,3 +260,28 @@ JAZZMIN_SETTINGS = {
     'show_sidebar': True,
     'navigation_expanded': True,
 }
+
+# Sentry — opcional. La app funciona igual si no está configurado o si el
+# paquete no está instalado (el import está guardado detrás de un try/except
+# a propósito). Nunca manda datos de request completos por defecto (Sentry ya
+# excluye contraseñas y cookies de forma automática, pero se desactiva
+# send_default_pii para no mandar tampoco IP/usuario de más).
+SENTRY_DSN = config('SENTRY_DSN', default='')
+if SENTRY_DSN:
+    try:
+        import sentry_sdk
+        from sentry_sdk.integrations.django import DjangoIntegration
+
+        sentry_sdk.init(
+            dsn=SENTRY_DSN,
+            integrations=[DjangoIntegration()],
+            traces_sample_rate=config('SENTRY_TRACES_SAMPLE_RATE', default=0.0, cast=float),
+            send_default_pii=False,
+            environment='production' if not DEBUG else 'development',
+        )
+    except ImportError:
+        import logging
+        logging.getLogger(__name__).warning(
+            'SENTRY_DSN está configurado pero sentry-sdk no está instalado '
+            '(pip install sentry-sdk). Sentry queda deshabilitado.'
+        )

@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
@@ -16,6 +18,8 @@ from rest_framework_simplejwt.exceptions import TokenError
 
 from .models import UsuarioPerfil
 from .serializers import RegistroSerializer, LoginSerializer, UsuarioSerializer
+
+logger = logging.getLogger(__name__)
 
 
 def _get_ip(request):
@@ -86,6 +90,7 @@ class LoginView(APIView):
 
         user = authenticate(request, email=email, password=password)
         if not user:
+            logger.warning('Login de usuario fallido (email=%s, ip=%s)', email, _get_ip(request))
             return Response({'error': 'Email o contraseña incorrectos.'}, status=401)
         if not user.is_active:
             return Response({'error': 'Tu cuenta está desactivada.'}, status=401)
@@ -109,6 +114,9 @@ class GoogleAuthView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        if not _rate_limit(f'google-auth:{_get_ip(request)}', max_attempts=15, window=300):
+            return Response({'error': 'Demasiados intentos. Intentá de nuevo en unos minutos.'}, status=429)
+
         credential = request.data.get('credential')
         if not credential:
             return Response({'error': 'Token de Google requerido.'}, status=400)

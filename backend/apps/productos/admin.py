@@ -20,12 +20,16 @@ class ProductoAdmin(admin.ModelAdmin):
     readonly_fields = ['slug', 'created_at', 'imagen_preview']
     ordering = ['-activo', 'nombre']
 
+    def get_queryset(self, request):
+        # Anotado para evitar N+1 (una consulta de stock por fila) en el listado.
+        return super().get_queryset(request).select_related('categoria').con_disponibilidad()
+
     def precio_fmt(self, obj):
         return f'${obj.precio:,.0f}'.replace(',', '.')
     precio_fmt.short_description = 'Precio'
 
     def stock_disp(self, obj):
-        disp = obj.stock_disponible
+        disp = obj.stock_disponible_anotado
         color = 'green' if disp > 3 else ('orange' if disp > 0 else 'red')
         return format_html('<span style="color:{}">{}</span>', color, disp)
     stock_disp.short_description = 'Disponible'

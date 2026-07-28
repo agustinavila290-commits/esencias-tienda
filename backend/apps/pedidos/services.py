@@ -1,3 +1,5 @@
+import logging
+
 from django.db import transaction
 from django.utils import timezone
 from django.db.models import Sum
@@ -5,6 +7,8 @@ from datetime import timedelta
 
 from .models import Pedido, ItemPedido, HistorialEstado
 from apps.productos.models import Producto
+
+logger = logging.getLogger(__name__)
 
 
 class PedidoService:
@@ -142,6 +146,60 @@ class PedidoService:
         return pedido
 
     @staticmethod
+    def confirmar_pedido_tardio(pedido_id: int, nota: str = '') -> Pedido:
+        """Confirma un pedido `vencido` o `cancelado` cuyo pago de Mercado Pago
+        se aprobó después de que la reserva expiró (o fue cancelada).
+
+        Política: solo se confirma —y solo entonces se descuenta stock real—
+        si todavía hay stock real suficiente para cubrir el pedido completo.
+        Si no lo hay, el pedido queda como estaba (no se vende de más) y se
+        deja constancia en el historial para que el negocio lo resuelva a
+        mano (reembolso manual desde Mercado Pago, contactar al cliente, etc.).
+        """
+        stock_faltante = None
+
+        with transaction.atomic():
+            pedido = Pedido.objects.select_for_update().get(pk=pedido_id)
+
+            if pedido.estado not in ('vencido', 'cancelado'):
+                raise ValueError(
+                    f'confirmar_pedido_tardio solo aplica a pedidos vencidos o cancelados. '
+                    f'Estado actual: "{pedido.get_estado_display()}".'
+                )
+
+            items = list(pedido.items.select_related('producto').select_for_update())
+            faltantes = [item for item in items if item.producto.stock < item.cantidad]
+
+            if not faltantes:
+                for item in items:
+                    item.producto.stock = max(0, item.producto.stock - item.cantidad)
+                    item.producto.save(update_fields=['stock'])
+
+                pedido.estado = 'confirmado'
+                pedido.save(update_fields=['estado'])
+                PedidoService._historial(
+                    pedido, 'confirmado',
+                    nota or 'Pago de Mercado Pago aprobado tardíamente; confirmado con stock disponible'
+                )
+                return pedido
+
+            # Hay stock insuficiente: no confirmamos y no tocamos stock. Se sale de
+            # este atomic sin haber escrito nada, para poder registrar el rechazo
+            # en una transacción propia (ver más abajo) que sí sobreviva al
+            # ValueError que levantamos a continuación.
+            stock_faltante = ', '.join(
+                f'{it.producto.nombre} (necesita {it.cantidad}, hay {it.producto.stock})'
+                for it in faltantes
+            )
+
+        PedidoService._historial(
+            pedido, pedido.estado,
+            f'Pago de Mercado Pago aprobado tardíamente pero sin stock suficiente '
+            f'({stock_faltante}). Requiere revisión manual (reembolso o reposición).'
+        )
+        raise ValueError(f'Stock insuficiente para confirmar tardíamente: {stock_faltante}')
+
+    @staticmethod
     def crear_preferencia_mp(pedido_id: int) -> str:
         import mercadopago
         from django.conf import settings
@@ -199,6 +257,7 @@ class PedidoService:
         result = sdk.payment().get(payment_id)
 
         if result['status'] != 200:
+            logger.warning('MP webhook: no se pudo consultar el pago %s (status=%s)', payment_id, result['status'])
             return
 
         payment = result['response']
@@ -206,18 +265,61 @@ class PedidoService:
         external_ref = payment.get('external_reference', '')
 
         if not external_ref:
+            logger.warning('MP webhook: pago %s no trae external_reference, se ignora.', payment_id)
             return
 
         try:
             pedido = Pedido.objects.get(codigo=external_ref)
         except Pedido.DoesNotExist:
+            logger.error(
+                'MP webhook: pago %s referencia el pedido "%s" que no existe.',
+                payment_id, external_ref,
+            )
+            return
+
+        # Idempotencia: si ya vimos este mismo pago con este mismo estado, no repetir
+        # ningún efecto secundario (confirmar/cancelar) — Mercado Pago puede reenviar
+        # la misma notificación varias veces.
+        ya_procesado = pedido.mp_payment_id == str(payment_id) and pedido.mp_status == mp_status
+        if ya_procesado:
+            logger.info(
+                'MP webhook: pago %s ya había sido procesado con estado "%s" para %s, se ignora.',
+                payment_id, mp_status, pedido.codigo,
+            )
             return
 
         pedido.mp_payment_id = str(payment_id)
         pedido.mp_status = mp_status
         pedido.save(update_fields=['mp_payment_id', 'mp_status'])
 
-        if mp_status == 'approved' and pedido.estado == 'pendiente':
-            PedidoService.confirmar_pedido(pedido.id)
+        logger.info(
+            'MP webhook: pedido %s -> mp_status="%s" (estado del pedido: "%s")',
+            pedido.codigo, mp_status, pedido.estado,
+        )
+
+        if mp_status == 'approved':
+            if pedido.estado == 'pendiente':
+                PedidoService.confirmar_pedido(pedido.id)
+                logger.info('MP webhook: pedido %s confirmado (pago aprobado en término).', pedido.codigo)
+            elif pedido.estado in ('vencido', 'cancelado'):
+                # La reserva ya no estaba vigente cuando llegó la aprobación del pago.
+                # Se intenta confirmar igual, pero solo si sigue habiendo stock real
+                # suficiente: nunca se vende más de lo que hay físicamente.
+                try:
+                    PedidoService.confirmar_pedido_tardio(
+                        pedido.id, nota=f'Pago de Mercado Pago {payment_id} aprobado tardíamente'
+                    )
+                    logger.warning(
+                        'MP webhook: pedido %s confirmado tardíamente (pago llegó después del vencimiento).',
+                        pedido.codigo,
+                    )
+                except ValueError as e:
+                    logger.error(
+                        'MP webhook: pedido %s no se pudo confirmar tardíamente (%s). '
+                        'Requiere revisión manual — el pago quedó registrado en el pedido.',
+                        pedido.codigo, e,
+                    )
+            # Si ya está confirmado/enviado/entregado no hay nada más que hacer;
+            # solo se actualizaron mp_payment_id / mp_status arriba.
         elif mp_status in ('cancelled', 'rejected') and pedido.estado == 'pendiente':
             PedidoService.cancelar_pedido(pedido.id)
