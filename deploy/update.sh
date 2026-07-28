@@ -36,7 +36,7 @@ echo "[$(date)] Aplicando migraciones..."
 sudo -u "$RUN_AS" bash -c "export \$(grep -v '^#' .env | xargs -d '\n'); '$VENV/bin/python' manage.py migrate --noinput"
 
 echo "[$(date)] Recopilando archivos estáticos..."
-sudo -u "$RUN_AS" bash -c "export \$(grep -v '^#' .env | xargs -d '\n'); '$VENV/bin/python' manage.py collectstatic --noinput -q"
+sudo -u "$RUN_AS" bash -c "export \$(grep -v '^#' .env | xargs -d '\n'); '$VENV/bin/python' manage.py collectstatic --noinput -v 0"
 
 echo "[$(date)] Reiniciando backend con el código nuevo..."
 systemctl restart esencias
