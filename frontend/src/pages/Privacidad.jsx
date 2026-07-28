@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom'
 import Seo from '../components/Seo'
 
-function Pendiente({ children }) {
-  return (
-    <span className="bg-amber-50 text-amber-700 border border-amber-200 rounded px-1.5 py-0.5 text-xs font-semibold">
-      {children} — PENDIENTE DE COMPLETAR
-    </span>
-  )
-}
-
+/*
+ * DATOS PENDIENTES DE COMPLETAR POR EL TITULAR DEL NEGOCIO (no visibles para
+ * el cliente final a propósito — ver deploy/DATOS_PENDIENTES.md):
+ *   - Razón social / nombre del titular y CUIT
+ *   - Email de contacto específico para temas de privacidad
+ *   - Plazo de conservación de datos de pedidos y cuentas
+ *   - Fecha de última actualización real de este texto
+ */
 export default function Privacidad() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 pb-10">
@@ -18,24 +18,15 @@ export default function Privacidad() {
         Volver a la tienda
       </Link>
 
-      <h1 className="font-display text-3xl font-bold text-tierra-800 mb-2">Política de privacidad</h1>
-      <p className="text-xs text-gray-400 mb-6">Última actualización: <Pendiente>fecha</Pendiente></p>
-
-      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-sm text-amber-800 mb-6">
-        Esta página describe, en base al código real de la tienda, qué datos se
-        piden y para qué se usan. Los datos marcados como{' '}
-        <strong>PENDIENTE DE COMPLETAR</strong> (responsable legal, contacto de
-        privacidad, plazos de conservación) los tiene que definir el titular del
-        negocio.
-      </div>
+      <h1 className="font-display text-3xl font-bold text-tierra-800 mb-6">Política de privacidad</h1>
 
       <div className="space-y-5 text-sm text-gray-600 leading-relaxed">
         <section>
           <h2 className="font-display text-lg font-bold text-tierra-800 mb-2">1. Responsable</h2>
           <p>
-            El responsable del tratamiento de tus datos es{' '}
-            <Pendiente>razón social / nombre del titular</Pendiente>, CUIT{' '}
-            <Pendiente>número de CUIT</Pendiente>.
+            El responsable del tratamiento de tus datos es Esencias de la naturaleza.
+            Podés contactarnos desde la página de{' '}
+            <Link to="/contacto" className="text-tierra-600 underline">Contacto</Link>.
           </p>
         </section>
 
@@ -70,18 +61,10 @@ export default function Privacidad() {
         </section>
 
         <section>
-          <h2 className="font-display text-lg font-bold text-tierra-800 mb-2">5. Cuánto tiempo los conservamos</h2>
+          <h2 className="font-display text-lg font-bold text-tierra-800 mb-2">5. Tus derechos</h2>
           <p>
-            <Pendiente>plazo de conservación de datos de pedidos y cuentas</Pendiente>.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="font-display text-lg font-bold text-tierra-800 mb-2">6. Tus derechos</h2>
-          <p>
-            Podés pedir acceder, corregir o eliminar tus datos escribiéndonos por{' '}
-            <Link to="/contacto" className="text-tierra-600 underline">Contacto</Link>
-            {' '}o a <Pendiente>email de contacto para temas de privacidad</Pendiente>.
+            Podés pedir acceder, corregir o eliminar tus datos escribiéndonos desde la
+            página de <Link to="/contacto" className="text-tierra-600 underline">Contacto</Link>.
           </p>
         </section>
       </div>

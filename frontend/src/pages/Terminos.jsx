@@ -1,14 +1,18 @@
 import { Link } from 'react-router-dom'
 import Seo from '../components/Seo'
 
-function Pendiente({ children }) {
-  return (
-    <span className="bg-amber-50 text-amber-700 border border-amber-200 rounded px-1.5 py-0.5 text-xs font-semibold">
-      {children} — PENDIENTE DE COMPLETAR
-    </span>
-  )
-}
-
+/*
+ * DATOS PENDIENTES DE COMPLETAR POR EL TITULAR DEL NEGOCIO (no visibles para
+ * el cliente final a propósito — ver deploy/DATOS_PENDIENTES.md):
+ *   - Razón social / nombre del titular
+ *   - CUIT
+ *   - Domicilio legal
+ *   - Jurisdicción / tribunales competentes
+ *   - Fecha de última actualización real de este texto
+ * Hasta tener esos datos, este texto evita afirmaciones específicas que
+ * todavía no se pueden confirmar, en vez de mostrar marcadores de "pendiente"
+ * en una página pública.
+ */
 export default function Terminos() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 pb-10">
@@ -18,22 +22,15 @@ export default function Terminos() {
         Volver a la tienda
       </Link>
 
-      <h1 className="font-display text-3xl font-bold text-tierra-800 mb-2">Términos y condiciones</h1>
-      <p className="text-xs text-gray-400 mb-6">Última actualización: <Pendiente>fecha</Pendiente></p>
-
-      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-sm text-amber-800 mb-6">
-        Esta página tiene una estructura general de términos y condiciones para un
-        comercio online. Los datos marcados como <strong>PENDIENTE DE COMPLETAR</strong> son
-        datos legales/comerciales reales (razón social, CUIT, domicilio, etc.) que
-        tiene que cargar el titular del negocio — no se inventaron acá.
-      </div>
+      <h1 className="font-display text-3xl font-bold text-tierra-800 mb-6">Términos y condiciones</h1>
 
       <div className="space-y-5 text-sm text-gray-600 leading-relaxed">
         <section>
           <h2 className="font-display text-lg font-bold text-tierra-800 mb-2">1. Quiénes somos</h2>
           <p>
-            Esencias de la naturaleza es operado por <Pendiente>razón social / nombre del titular</Pendiente>,
-            CUIT <Pendiente>número de CUIT</Pendiente>, con domicilio en <Pendiente>domicilio legal</Pendiente>.
+            Esencias de la naturaleza es una tienda online de sahumerios artesanales.
+            Podés contactarnos desde la página de{' '}
+            <Link to="/contacto" className="text-tierra-600 underline">Contacto</Link>.
           </p>
         </section>
 
@@ -75,11 +72,9 @@ export default function Terminos() {
         </section>
 
         <section>
-          <h2 className="font-display text-lg font-bold text-tierra-800 mb-2">6. Ley aplicable y jurisdicción</h2>
+          <h2 className="font-display text-lg font-bold text-tierra-800 mb-2">6. Ley aplicable</h2>
           <p>
-            Estos términos se rigen por las leyes de la República Argentina. Ante
-            cualquier conflicto, las partes se someten a la jurisdicción de{' '}
-            <Pendiente>jurisdicción / tribunales competentes</Pendiente>.
+            Estos términos se rigen por las leyes de la República Argentina.
           </p>
         </section>
 
