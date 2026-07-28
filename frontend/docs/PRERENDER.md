@@ -67,7 +67,18 @@ del `index.html` base).
    productos activos a prerenderizar). Si la API no responde, el script
    sigue con las páginas estáticas y loguea una advertencia — no rompe el
    build.
-4. **No está enganchado al `npm run build` por defecto** (el que usa
+4. **CORS**: el prerender levanta `vite preview` en `http://127.0.0.1:4173` y
+   ese origen hace fetch a la API real (`VITE_API_URL`). Si el backend está
+   en otro dominio (como en producción), `http://127.0.0.1:4173` tiene que
+   estar en `CORS_ALLOWED_ORIGINS` del backend — si no, el navegador
+   bloquea la respuesta (aunque el request HTTP haya dado 200) y las
+   páginas de producto/categoría se prerenderizan con el título/descripción
+   genéricos en vez de los reales, porque el fetch del lado de React falla y
+   cae al estado "no encontrado". Encontrado corriendo el prerender real
+   contra producción durante el despliegue de Fase 9. Es un origen loopback
+   (no accesible desde internet) y los endpoints que expone ya son
+   públicos de por sí, así que agregarlo no debilita la seguridad de CORS.
+5. **No está enganchado al `npm run build` por defecto** (el que usa
    `deploy/update.sh`), para no arriesgar el pipeline de deploy actual sin
    que el equipo lo valide primero en el propio servidor. Adoptarlo：
    cambiar `npm run build` por `npm run build:prerender` en
