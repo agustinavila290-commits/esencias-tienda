@@ -1,0 +1,16 @@
+# ==============================================================
+# systemd oneshot — backup diario de Esencias (Postgres + media)
+# Copiar a: /etc/systemd/system/esencias-backup.service
+# Se dispara desde esencias-backup.timer (no se activa/inicia directo).
+# ==============================================================
+
+[Unit]
+Description=Esencias de la naturaleza — backup diario (Postgres + media)
+After=network.target postgresql.service
+
+[Service]
+Type=oneshot
+User=root
+Environment=BACKUP_DIR=/srv/esencias-backups
+Environment=RETENTION_DAYS=14
+ExecStart=/srv/esencias/deploy/backup.sh

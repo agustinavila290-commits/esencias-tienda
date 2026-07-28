@@ -21,9 +21,14 @@ DUMP_FILE="${1:?Uso: restore-test.sh <ruta-al-dump.sql.gz>}"
 TEST_DB="esencias_restore_test"
 
 if [ -f "$APP_DIR/backend/.env" ]; then
+    # Ver el comentario en backup.sh: no usar `source` acá, SECRET_KEY/
+    # DB_PASSWORD pueden traer '$', backticks, etc. que source interpretaría
+    # como bash. Se lee línea por línea como texto literal en cambio.
     set -a
-    # shellcheck disable=SC1091
-    source "$APP_DIR/backend/.env"
+    while IFS='=' read -r key value; do
+        [[ "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || continue
+        export "$key=$value"
+    done < <(grep -vE '^\s*(#|$)' "$APP_DIR/backend/.env")
     set +a
 fi
 

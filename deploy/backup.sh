@@ -21,9 +21,16 @@ RETENTION_DAYS="${RETENTION_DAYS:-14}"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
 if [ -f "$APP_DIR/backend/.env" ]; then
+    # OJO: no usar `source`/`. archivo` acá — SECRET_KEY y DB_PASSWORD son
+    # strings generados al azar que pueden incluir '$', backticks, etc., y
+    # source los interpretaría como código bash (falla con "unbound variable"
+    # o, peor, podría ejecutar algo). Se leen línea por línea como texto
+    # literal en cambio.
     set -a
-    # shellcheck disable=SC1091
-    source "$APP_DIR/backend/.env"
+    while IFS='=' read -r key value; do
+        [[ "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || continue
+        export "$key=$value"
+    done < <(grep -vE '^\s*(#|$)' "$APP_DIR/backend/.env")
     set +a
 fi
 

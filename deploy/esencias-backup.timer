@@ -1,0 +1,18 @@
+# ==============================================================
+# systemd timer — corre esencias-backup.service todos los días a las 03:00
+# Copiar a: /etc/systemd/system/esencias-backup.timer
+# Activar:
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now esencias-backup.timer
+# ==============================================================
+
+[Unit]
+Description=Backup diario de Esencias (03:00)
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+Unit=esencias-backup.service
+
+[Install]
+WantedBy=timers.target
