@@ -10,7 +10,7 @@ After=network.target
 
 [Service]
 Type=oneshot
-User=root
+User=esencias
 Group=www-data
 WorkingDirectory=/srv/esencias/backend
 EnvironmentFile=/srv/esencias/backend/.env

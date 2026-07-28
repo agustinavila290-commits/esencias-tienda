@@ -14,7 +14,12 @@ After=network.target
 [Service]
 Type=notify
 
-User=root
+# Usuario dedicado, sin privilegios (igual patron que avilapos.service) — no
+# correr Gunicorn como root. Crear con:
+#   adduser --system --group --home /srv/esencias --shell /bin/bash esencias
+#   usermod -a -G www-data esencias
+#   chown -R esencias:www-data /srv/esencias
+User=esencias
 Group=www-data
 WorkingDirectory=/srv/esencias/backend
 
