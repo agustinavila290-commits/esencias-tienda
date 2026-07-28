@@ -85,7 +85,7 @@ export default function Layout({ children }) {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/96 backdrop-blur-md border-b border-tierra-100 shadow-sm">
+      <header className="sticky top-0 z-30 bg-white backdrop-blur-md border-b border-tierra-100 shadow">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center gap-3">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">
