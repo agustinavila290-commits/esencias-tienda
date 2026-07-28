@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import Seo from '../components/Seo'
 
 function Seccion({ icono, titulo, children }) {
   return (
@@ -16,12 +16,13 @@ function Seccion({ icono, titulo, children }) {
 }
 
 export default function Envios() {
-  useEffect(() => {
-    document.title = 'Envíos y pagos — Esencias de la naturaleza'
-  }, [])
-
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 pb-10">
+      <Seo
+        title="Envíos y medios de pago"
+        description="Conocé cómo realizamos los envíos y qué medios de pago aceptamos: WhatsApp, transferencia, Mercado Pago y efectivo."
+        path="/envios"
+      />
       <Link to="/" className="text-tierra-600 hover:text-tierra-800 text-sm flex items-center gap-1.5 mb-6 transition-colors">
         <svg viewBox="0 0 20 20" className="w-4 h-4 fill-current"><path d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"/></svg>
         Volver a la tienda

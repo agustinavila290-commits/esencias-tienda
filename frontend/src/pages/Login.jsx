@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { TIENDA_NOMBRE } from '../config'
+import Seo from '../components/Seo'
 
 export default function Login() {
   const { login } = useAuth()
@@ -26,6 +27,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-tierra-50 flex items-center justify-center px-4">
+      <Seo title="Ingresar" path="/login" noindex />
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <span className="text-5xl">🌿</span>

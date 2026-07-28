@@ -1,21 +1,46 @@
 import axios from 'axios'
 import { API_URL } from '../config'
+import { getAdminToken, setAdminToken } from './adminToken'
 
-const api = axios.create({ baseURL: API_URL })
+// withCredentials: necesario para que el navegador mande/reciba la cookie
+// HttpOnly del refresh token del admin (con Path=/api/auth/, así que en la
+// práctica solo viaja hacia esos endpoints puntuales, no en cada request).
+const api = axios.create({ baseURL: API_URL, withCredentials: true })
 
 api.interceptors.request.use(config => {
-  const token = localStorage.getItem('admin_token')
+  const token = getAdminToken()
   if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })
 
+// Si el access token venció (401), se intenta renovar una sola vez usando
+// la cookie de refresh (silencioso, sin pedirle nada al usuario) y se
+// reintenta la request original. Si el refresh también falla, recién ahí
+// se cierra la sesión. Las llamadas a /auth/* quedan afuera para no entrar
+// en loop contra sí mismas.
+let refreshEnCurso = null
+
 api.interceptors.response.use(
   r => r,
-  err => {
-    if (err.response?.status === 401) {
-      localStorage.removeItem('admin_token')
-      if (window.location.pathname.startsWith('/admin')) {
-        window.location.href = '/login'
+  async err => {
+    const { config, response } = err
+    const esLlamadaDeAuth = config?.url?.includes('/auth/')
+
+    if (response?.status === 401 && config && !config._retry && !esLlamadaDeAuth) {
+      config._retry = true
+      try {
+        if (!refreshEnCurso) {
+          refreshEnCurso = api.post('/auth/refresh/').finally(() => { refreshEnCurso = null })
+        }
+        const r = await refreshEnCurso
+        setAdminToken(r.data.access)
+        config.headers.Authorization = `Bearer ${r.data.access}`
+        return api(config)
+      } catch {
+        setAdminToken(null)
+        if (window.location.pathname.startsWith('/admin')) {
+          window.location.href = '/login'
+        }
       }
     }
     return Promise.reject(err)
@@ -23,8 +48,9 @@ api.interceptors.response.use(
 )
 
 export const productosService = {
-  list: ()       => api.get('/productos/'),
+  list: (params, config = {}) => api.get('/productos/', { params, ...config }),
   get:  (id)     => api.get(`/productos/${id}/`),
+  getBySlug: (slug) => api.get(`/productos/slug/${slug}/`),
   adminList: ()  => api.get('/admin/productos/'),
   create: (data) => api.post('/admin/productos/', data, {
     headers: { 'Content-Type': 'multipart/form-data' },
@@ -46,6 +72,7 @@ export const categoriasService = {
 export const pedidosService = {
   crear:            (data)        => api.post('/pedidos/crear/', data),
   crearPreferencia: (id)          => api.post(`/pedidos/${id}/crear-preferencia/`),
+  seguimiento:      (codigo, token) => api.get(`/pedidos/${codigo}/seguimiento/`, { params: { token } }),
   adminList:        (params)      => api.get('/admin/pedidos/', { params }),
   confirmar:        (id)          => api.post(`/admin/pedidos/${id}/confirmar/`),
   cancelar:         (id)          => api.post(`/admin/pedidos/${id}/cancelar/`),
@@ -55,7 +82,8 @@ export const pedidosService = {
 
 export const authService = {
   login:   (creds) => api.post('/auth/login/', creds),
-  refresh: (token) => api.post('/auth/refresh/', { refresh: token }),
+  refresh: ()       => api.post('/auth/refresh/'),
+  logout:  ()       => api.post('/auth/logout/'),
   me:      ()      => api.get('/auth/me/'),
 }
 

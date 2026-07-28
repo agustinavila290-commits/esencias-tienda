@@ -21,11 +21,18 @@ function ModalCategoria({ categoria, onCerrar, onGuardado }) {
   const [form, setForm] = useState({
     nombre: categoria?.nombre || '',
     icono:  categoria?.icono  || '',
+    descripcion: categoria?.descripcion || '',
     orden:  categoria?.orden  ?? 0,
     activo: categoria?.activo ?? true,
   })
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    const onKeyDown = e => { if (e.key === 'Escape') onCerrar() }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [onCerrar])
 
   const handleSubmit = async e => {
     e.preventDefault()
@@ -50,25 +57,30 @@ function ModalCategoria({ categoria, onCerrar, onGuardado }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="bg-white w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl">
+      <div role="dialog" aria-modal="true" aria-labelledby="modal-categoria-titulo" className="bg-white w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl">
         <div className="p-5 border-b flex items-center justify-between">
-          <h3 className="font-bold text-gray-800">{categoria?.id ? 'Editar categoría' : 'Nueva categoría'}</h3>
-          <button onClick={onCerrar} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+          <h3 id="modal-categoria-titulo" className="font-bold text-gray-800">{categoria?.id ? 'Editar categoría' : 'Nueva categoría'}</h3>
+          <button onClick={onCerrar} aria-label="Cerrar" className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
         </div>
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
-            <input value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))}
+            <label htmlFor="categoria-nombre" className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
+            <input id="categoria-nombre" value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))}
               className="input-field" required placeholder="ej. Sahumerios" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Ícono (emoji)</label>
-            <input value={form.icono} onChange={e => setForm(f => ({ ...f, icono: e.target.value }))}
+            <label htmlFor="categoria-icono" className="block text-sm font-medium text-gray-700 mb-1">Ícono (emoji)</label>
+            <input id="categoria-icono" value={form.icono} onChange={e => setForm(f => ({ ...f, icono: e.target.value }))}
               className="input-field" placeholder="ej. 🌿" maxLength={4} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Orden de aparición</label>
-            <input type="number" min="0" value={form.orden}
+            <label htmlFor="categoria-descripcion" className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+            <textarea id="categoria-descripcion" value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))}
+              className="input-field resize-none" rows={2} placeholder="Se muestra en la página pública de la categoría" />
+          </div>
+          <div>
+            <label htmlFor="categoria-orden" className="block text-sm font-medium text-gray-700 mb-1">Orden de aparición</label>
+            <input id="categoria-orden" type="number" min="0" value={form.orden}
               onChange={e => setForm(f => ({ ...f, orden: parseInt(e.target.value) || 0 }))}
               className="input-field" />
           </div>
@@ -104,6 +116,12 @@ function ModalProducto({ producto, categorias, onCerrar, onGuardado }) {
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState('')
   const fileRef = useRef()
+
+  useEffect(() => {
+    const onKeyDown = e => { if (e.key === 'Escape') onCerrar() }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [onCerrar])
 
   const handleImagen = e => {
     const file = e.target.files[0]
@@ -141,17 +159,21 @@ function ModalProducto({ producto, categorias, onCerrar, onGuardado }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl max-h-[95vh] overflow-y-auto">
+      <div role="dialog" aria-modal="true" aria-labelledby="modal-producto-titulo" className="bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl max-h-[95vh] overflow-y-auto">
         <div className="p-5 border-b flex items-center justify-between">
-          <h3 className="font-bold text-gray-800">{producto?.id ? 'Editar producto' : 'Nuevo producto'}</h3>
-          <button onClick={onCerrar} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+          <h3 id="modal-producto-titulo" className="font-bold text-gray-800">{producto?.id ? 'Editar producto' : 'Nuevo producto'}</h3>
+          <button onClick={onCerrar} aria-label="Cerrar" className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
         </div>
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {/* Imagen */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Imagen</label>
-            <div onClick={() => fileRef.current.click()}
-              className="aspect-video bg-tierra-50 border-2 border-dashed border-tierra-200 rounded-xl flex items-center justify-center cursor-pointer hover:bg-tierra-100 transition-colors overflow-hidden">
+            <label id="producto-imagen-label" className="block text-sm font-medium text-gray-700 mb-2">Imagen</label>
+            <div
+              onClick={() => fileRef.current.click()}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileRef.current.click() } }}
+              role="button" tabIndex={0} aria-labelledby="producto-imagen-label"
+              className="aspect-video bg-tierra-50 border-2 border-dashed border-tierra-200 rounded-xl flex items-center justify-center cursor-pointer hover:bg-tierra-100 transition-colors overflow-hidden"
+            >
               {preview ? (
                 <img src={preview} alt="" className="w-full h-full object-cover" />
               ) : (
@@ -161,36 +183,36 @@ function ModalProducto({ producto, categorias, onCerrar, onGuardado }) {
                 </div>
               )}
             </div>
-            <input ref={fileRef} type="file" accept="image/*" onChange={handleImagen} className="hidden" />
+            <input ref={fileRef} type="file" accept="image/*" onChange={handleImagen} className="hidden" aria-label="Subir imagen del producto" />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
-            <input value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))}
+            <label htmlFor="producto-nombre" className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
+            <input id="producto-nombre" value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))}
               className="input-field" required />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-            <textarea value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))}
+            <label htmlFor="producto-descripcion" className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+            <textarea id="producto-descripcion" value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))}
               className="input-field resize-none" rows={3} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Precio * ($)</label>
-              <input type="number" step="0.01" min="0.01" value={form.precio}
+              <label htmlFor="producto-precio" className="block text-sm font-medium text-gray-700 mb-1">Precio * ($)</label>
+              <input id="producto-precio" type="number" step="0.01" min="0.01" value={form.precio}
                 onChange={e => setForm(f => ({ ...f, precio: e.target.value }))}
                 className="input-field" required />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Stock real</label>
-              <input type="number" min="0" value={form.stock}
+              <label htmlFor="producto-stock" className="block text-sm font-medium text-gray-700 mb-1">Stock real</label>
+              <input id="producto-stock" type="number" min="0" value={form.stock}
                 onChange={e => setForm(f => ({ ...f, stock: e.target.value }))}
                 className="input-field" />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
-            <select value={form.categoria} onChange={e => setForm(f => ({ ...f, categoria: e.target.value || '' }))}
+            <label htmlFor="producto-categoria" className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+            <select id="producto-categoria" value={form.categoria} onChange={e => setForm(f => ({ ...f, categoria: e.target.value || '' }))}
               className="input-field">
               <option value="">Sin categoría</option>
               {categorias.map(c => (
@@ -452,8 +474,8 @@ export default function Admin() {
             ) : (
               productos.map(p => (
                 <div key={p.id} className={`card p-4 flex items-center gap-3 ${!p.activo ? 'opacity-50' : ''}`}>
-                  {p.imagen_url ? (
-                    <img src={p.imagen_url} alt={p.nombre} className="w-14 h-14 object-cover rounded-lg flex-shrink-0" />
+                  {(p.imagen_thumbnail_url || p.imagen_url) ? (
+                    <img src={p.imagen_thumbnail_url || p.imagen_url} alt={p.nombre} width={56} height={56} loading="lazy" className="w-14 h-14 object-cover rounded-lg flex-shrink-0" />
                   ) : (
                     <div className="w-14 h-14 bg-tierra-100 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">🌿</div>
                   )}

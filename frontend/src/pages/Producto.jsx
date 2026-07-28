@@ -30,7 +30,7 @@ export default function Producto() {
       })
       .then(r => {
         const idNum = parseInt(id)
-        const otros = r.data.filter(p => p.id !== idNum && p.activo !== false)
+        const otros = (r.data.results || []).filter(p => p.id !== idNum && p.activo !== false)
         const shuffled = [...otros].sort(() => Math.random() - 0.5).slice(0, 3)
         setRelacionados(shuffled)
       })

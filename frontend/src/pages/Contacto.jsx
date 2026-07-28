@@ -1,14 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { WHATSAPP_NUMBER, INSTAGRAM_URL } from '../config'
+import Seo from '../components/Seo'
 
 export default function Contacto() {
   const [nombre, setNombre]   = useState('')
   const [mensaje, setMensaje] = useState('')
-
-  useEffect(() => {
-    document.title = 'Contacto — Esencias de la naturaleza'
-  }, [])
 
   const handleEnviar = (e) => {
     e.preventDefault()
@@ -21,6 +18,11 @@ export default function Contacto() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 pb-10">
+      <Seo
+        title="Contacto"
+        description="Escribinos por WhatsApp o Instagram. Te respondemos a la brevedad."
+        path="/contacto"
+      />
       <Link to="/" className="text-tierra-600 hover:text-tierra-800 text-sm flex items-center gap-1.5 mb-6 transition-colors">
         <svg viewBox="0 0 20 20" className="w-4 h-4 fill-current">
           <path d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"/>

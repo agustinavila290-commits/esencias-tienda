@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useCarrito } from '../context/CarritoContext'
 import { useToast } from '../context/ToastContext'
 import { pedidosService } from '../services/api'
 import { WHATSAPP_NUMBER } from '../config'
 import { validarCliente } from '../utils/validarCliente'
+import ReservaCountdown from './ReservaCountdown'
 
 function formatPrecio(n) {
   return '$' + Number(n).toLocaleString('es-AR', { maximumFractionDigits: 0 })
@@ -23,6 +25,14 @@ export default function Carrito() {
   const [cargando, setCargando]                 = useState(false)
   const [cargandoMP, setCargandoMP]             = useState(false)
   const [error, setError]                       = useState('')
+  const [pedidoCreado, setPedidoCreado]         = useState(null)
+
+  useEffect(() => {
+    if (!abierto) return undefined
+    const onKeyDown = e => { if (e.key === 'Escape') setAbierto(false) }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [abierto, setAbierto])
 
   if (!abierto) return null
 
@@ -32,6 +42,11 @@ export default function Carrito() {
     setClienteTel('')
     setClienteDireccion('')
     setError('')
+  }
+
+  const cerrarTodo = () => {
+    setPedidoCreado(null)
+    setAbierto(false)
   }
 
   const validar = () => {
@@ -57,7 +72,8 @@ export default function Carrito() {
     setCargando(true)
     try {
       const res = await crearReserva()
-      const { codigo, expires_at, total } = res.data
+      const pedido = res.data
+      const { codigo, expires_at, total } = pedido
       const lineas = items.map(i => `• ${i.nombre} x${i.cantidad} — ${formatPrecio(i.precio * i.cantidad)}`)
       const msg = [
         `Hola! Quiero hacer el siguiente pedido 🌿`,
@@ -73,8 +89,11 @@ export default function Carrito() {
       ].join('\n')
 
       vaciar()
-      setAbierto(false)
       resetCliente()
+      // Mantenemos el panel abierto mostrando la confirmación + el contador de
+      // la reserva en vez de cerrar todo de golpe, para que quede claro qué
+      // pasó y hasta cuándo vale la reserva (ver ReservaCountdown más abajo).
+      setPedidoCreado(pedido)
       toast({ message: '¡Reserva creada! Abriendo WhatsApp...', type: 'success' })
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank')
     } catch (err) {
@@ -107,9 +126,14 @@ export default function Carrito() {
 
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" onClick={() => setAbierto(false)} />
+      <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" onClick={() => setAbierto(false)} aria-hidden="true" />
 
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl max-h-[92vh] flex flex-col">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Carrito de compras"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl max-h-[92vh] flex flex-col"
+      >
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
           <div className="w-10 h-1 bg-gray-200 rounded-full" />
@@ -128,13 +152,44 @@ export default function Carrito() {
               </span>
             )}
           </div>
-          <button onClick={() => setAbierto(false)} className="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
-            <svg viewBox="0 0 20 20" className="w-5 h-5 fill-current">
+          <button onClick={cerrarTodo} aria-label="Cerrar carrito" className="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+            <svg viewBox="0 0 20 20" className="w-5 h-5 fill-current" aria-hidden="true">
               <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
             </svg>
           </button>
         </div>
 
+        {pedidoCreado ? (
+          /* Confirmación de la reserva recién creada, con contador de vencimiento */
+          <div className="px-5 py-6 space-y-4 overflow-y-auto">
+            <div className="text-center">
+              <p className="text-4xl mb-2">✅</p>
+              <h3 className="font-bold text-gray-800 text-lg">¡Reserva creada!</h3>
+              <p className="text-gray-500 text-sm mt-1">
+                Código: <span className="font-mono font-bold text-tierra-700">{pedidoCreado.codigo}</span>
+              </p>
+            </div>
+
+            <ReservaCountdown expiresAt={pedidoCreado.expires_at} estado={pedidoCreado.estado} />
+
+            <p className="text-sm text-gray-500 text-center">
+              Ya te abrimos WhatsApp para coordinar. Si se cerró, podés escribirnos
+              de nuevo con el código de arriba, o seguir el estado del pedido acá:
+            </p>
+
+            <Link
+              to={`/pedido/${pedidoCreado.codigo}?token=${pedidoCreado.tracking_token}`}
+              onClick={cerrarTodo}
+              className="btn-primary w-full block text-center"
+            >
+              Ver seguimiento del pedido
+            </Link>
+            <button onClick={cerrarTodo} className="w-full py-2.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
+              Seguir comprando
+            </button>
+          </div>
+        ) : (
+        <>
         {/* Items */}
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2.5 min-h-0">
           {items.length === 0 ? (
@@ -167,9 +222,9 @@ export default function Carrito() {
                     </svg>
                   </button>
                   <div className="flex items-center gap-1.5 bg-white rounded-xl border border-gray-200 px-1 py-0.5">
-                    <button onClick={() => cambiarCantidad(item.id, item.cantidad - 1)} className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-tierra-700 font-bold text-lg leading-none transition-colors">−</button>
-                    <span className="w-5 text-center font-bold text-sm text-gray-800">{item.cantidad}</span>
-                    <button onClick={() => cambiarCantidad(item.id, Math.min(item.cantidad + 1, item.stock_disponible))} disabled={item.cantidad >= item.stock_disponible} className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-tierra-700 font-bold text-lg leading-none transition-colors disabled:opacity-30">+</button>
+                    <button onClick={() => cambiarCantidad(item.id, item.cantidad - 1)} aria-label={`Restar una unidad de ${item.nombre}`} className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-tierra-700 font-bold text-lg leading-none transition-colors">−</button>
+                    <span className="w-5 text-center font-bold text-sm text-gray-800" aria-label={`Cantidad: ${item.cantidad}`}>{item.cantidad}</span>
+                    <button onClick={() => cambiarCantidad(item.id, Math.min(item.cantidad + 1, item.stock_disponible))} disabled={item.cantidad >= item.stock_disponible} aria-label={`Sumar una unidad de ${item.nombre}`} className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-tierra-700 font-bold text-lg leading-none transition-colors disabled:opacity-30">+</button>
                   </div>
                 </div>
               </div>
@@ -186,13 +241,13 @@ export default function Carrito() {
             </div>
 
             {/* Datos del cliente */}
-            <input type="text" placeholder="Tu nombre (opcional)" value={clienteNombre}
+            <input type="text" placeholder="Tu nombre (opcional)" aria-label="Tu nombre (opcional)" value={clienteNombre}
               onChange={e => setClienteNombre(e.target.value)} className="input-field text-sm" />
-            <input type="email" placeholder="Email (opcional)" value={clienteEmail}
+            <input type="email" placeholder="Email (opcional)" aria-label="Email (opcional)" value={clienteEmail}
               onChange={e => setClienteEmail(e.target.value)} className="input-field text-sm" />
-            <input type="tel" placeholder="Teléfono (opcional)" value={clienteTel}
+            <input type="tel" placeholder="Teléfono (opcional)" aria-label="Teléfono (opcional)" value={clienteTel}
               onChange={e => setClienteTel(e.target.value)} className="input-field text-sm" />
-            <input type="text" placeholder="Dirección de envío (opcional)" value={clienteDireccion}
+            <input type="text" placeholder="Dirección de envío (opcional)" aria-label="Dirección de envío (opcional)" value={clienteDireccion}
               onChange={e => setClienteDireccion(e.target.value)} className="input-field text-sm" />
 
             {error && (
@@ -200,6 +255,12 @@ export default function Carrito() {
                 {error}
               </div>
             )}
+
+            <p className="text-xs text-gray-400 text-center leading-relaxed">
+              Al confirmar reservamos tu pedido y tu stock por <strong>1 hora</strong>.
+              Si en ese tiempo no se coordina el pago, la reserva vence automáticamente
+              y el stock vuelve a estar disponible para otros clientes.
+            </p>
 
             <button onClick={handlePagarMP} disabled={cargandoMP || cargando} className="btn-mp w-full">
               {cargandoMP ? <span className="text-sm">Procesando...</span> : (
@@ -223,6 +284,8 @@ export default function Carrito() {
               )}
             </button>
           </div>
+        )}
+        </>
         )}
       </div>
     </>

@@ -41,10 +41,16 @@ function Footer() {
           </div>
         )}
 
-        <div className="flex justify-center gap-6 text-xs text-tierra-500 mb-4">
+        <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-tierra-500 mb-4">
           <Link to="/sobre-nosotros" className="hover:text-tierra-300 transition-colors">Sobre nosotros</Link>
+          <Link to="/como-comprar"   className="hover:text-tierra-300 transition-colors">Cómo comprar</Link>
           <Link to="/envios"         className="hover:text-tierra-300 transition-colors">Envíos y pagos</Link>
+          <Link to="/preguntas-frecuentes" className="hover:text-tierra-300 transition-colors">Preguntas frecuentes</Link>
           <Link to="/contacto"       className="hover:text-tierra-300 transition-colors">Contacto</Link>
+        </div>
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[11px] text-tierra-600 mb-4">
+          <Link to="/terminos"   className="hover:text-tierra-400 transition-colors">Términos y condiciones</Link>
+          <Link to="/privacidad" className="hover:text-tierra-400 transition-colors">Política de privacidad</Link>
         </div>
         <p className="text-tierra-600 text-xs">© {new Date().getFullYear()} Esencias de la naturaleza · Hecho con amor en Argentina</p>
       </div>
