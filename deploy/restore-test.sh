@@ -37,18 +37,24 @@ if [ "${USE_SQLITE:-True}" != "False" ]; then
     exit 1
 fi
 
+# El usuario de la app (DB_USER) correctamente NO tiene permiso CREATEDB
+# (verificado en Fase 9 — ni siquiera "manage.py test" puede crear su base
+# de test con ese usuario). Por eso crear/borrar la base temporal se hace
+# como el superusuario "postgres" del sistema (requiere correr este script
+# como root o con sudo), y solo el restore de datos usa DB_USER.
+PSQL_ADMIN="sudo -u postgres psql"
 export PGPASSWORD="${DB_PASSWORD:-}"
 PSQL="psql -h ${DB_HOST:-localhost} -p ${DB_PORT:-5432} -U ${DB_USER:-postgres}"
 
 echo "[$(date)] Creando base temporal '$TEST_DB'..."
-$PSQL -d postgres -c "DROP DATABASE IF EXISTS $TEST_DB;"
-$PSQL -d postgres -c "CREATE DATABASE $TEST_DB;"
+$PSQL_ADMIN -c "DROP DATABASE IF EXISTS $TEST_DB;"
+$PSQL_ADMIN -c "CREATE DATABASE $TEST_DB OWNER ${DB_USER:-postgres};"
 
 echo "[$(date)] Restaurando $DUMP_FILE en '$TEST_DB'..."
-gunzip -c "$DUMP_FILE" | $PSQL -d "$TEST_DB" > /dev/null
+gunzip -c "$DUMP_FILE" | $PSQL_ADMIN -d "$TEST_DB" > /dev/null
 
 echo "[$(date)] Verificando conteos de filas en tablas clave..."
-$PSQL -d "$TEST_DB" -c "
+$PSQL_ADMIN -d "$TEST_DB" -c "
     SELECT 'productos_producto' AS tabla, count(*) FROM productos_producto
     UNION ALL SELECT 'pedidos_pedido', count(*) FROM pedidos_pedido
     UNION ALL SELECT 'auth_user', count(*) FROM auth_user;
@@ -57,7 +63,7 @@ $PSQL -d "$TEST_DB" -c "
 echo
 read -r -p "¿Borrar la base temporal '$TEST_DB'? [s/N] " respuesta
 if [[ "$respuesta" =~ ^[sS]$ ]]; then
-    $PSQL -d postgres -c "DROP DATABASE $TEST_DB;"
+    $PSQL_ADMIN -c "DROP DATABASE $TEST_DB;"
     echo "[$(date)] Base temporal eliminada."
 else
     echo "[$(date)] Base temporal '$TEST_DB' queda disponible para inspección manual."
