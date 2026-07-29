@@ -110,6 +110,21 @@ export default function Layout({ children }) {
   const navigate = useNavigate()
   const menuRef = useRef(null)
 
+  // Animación breve del ícono del carrito cuando la cantidad total sube
+  // (agregar un producto), no cuando baja (eliminar) ni al montar.
+  const [cartPulse, setCartPulse] = useState(false)
+  const prevTotalItems = useRef(totalItems)
+  useEffect(() => {
+    if (totalItems > prevTotalItems.current) {
+      setCartPulse(true)
+      const t = setTimeout(() => setCartPulse(false), 500)
+      prevTotalItems.current = totalItems
+      return () => clearTimeout(t)
+    }
+    prevTotalItems.current = totalItems
+    return undefined
+  }, [totalItems])
+
   const isHome = location.pathname === '/'
   // En el inicio el header se integra con el hero (fondo oscuro) hasta que
   // el usuario hace scroll; en el resto de las páginas siempre es sólido.
@@ -323,15 +338,18 @@ export default function Layout({ children }) {
 
             <button
               onClick={() => setAbierto(true)}
-              className={`relative ${iconBtnClass}`}
-              aria-label={`Carrito (${totalItems} producto${totalItems !== 1 ? 's' : ''})`}
+              className={`relative flex items-center gap-1.5 ${headerTransparente ? 'hover:bg-white/10' : 'hover:bg-background-secondary'} rounded-full px-2 py-2 transition-colors duration-250 active:scale-[0.97]`}
+              aria-label={totalItems === 0 ? 'Abrir carrito, está vacío' : `Abrir carrito, ${totalItems} producto${totalItems !== 1 ? 's' : ''}`}
             >
-              <img src="/iconos/svg/07_carrito.svg" alt="" className="w-6 h-6" />
-              {totalItems > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-accent-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center leading-none">
-                  {totalItems > 9 ? '9+' : totalItems}
-                </span>
-              )}
+              <span className={`relative inline-flex transition-transform duration-250 motion-reduce:transition-none ${cartPulse ? 'scale-125' : 'scale-100'}`}>
+                <img src="/iconos/svg/07_carrito.svg" alt="" className="w-6 h-6" />
+                {totalItems > 0 && (
+                  <span className="absolute -top-1.5 -right-2 bg-accent-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center leading-none">
+                    {totalItems > 9 ? '9+' : totalItems}
+                  </span>
+                )}
+              </span>
+              <span className={`hidden xl:inline text-sm font-medium ${headerTransparente ? 'text-white' : 'text-text-primary'}`}>Carrito</span>
             </button>
 
             {/* Hamburger — mobile/tablet only */}

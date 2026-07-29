@@ -7,7 +7,7 @@ function formatPrecio(precio) {
 }
 
 export default function ProductCard({ producto }) {
-  const { agregar } = useCarrito()
+  const { agregar, setAbierto } = useCarrito()
   const toast = useToast()
 
   // `disponibilidad` viene calculada del backend (agotado / reservado_temporalmente
@@ -29,7 +29,11 @@ export default function ProductCard({ producto }) {
   const handleAgregar = () => {
     if (sinStock) return
     agregar(producto)
-    toast({ message: `${producto.nombre} agregado al carrito`, type: 'success' })
+    toast({
+      message: `${producto.nombre} agregado al carrito`,
+      type: 'success',
+      action: { label: 'Ver carrito', onClick: () => setAbierto(true) },
+    })
   }
 
   return (

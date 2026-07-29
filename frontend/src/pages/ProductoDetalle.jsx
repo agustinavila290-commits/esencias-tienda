@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { productosService } from '../services/api'
 import { useCarrito } from '../context/CarritoContext'
 import { useToast } from '../context/ToastContext'
 import { WHATSAPP_NUMBER, TIENDA_NOMBRE, SITE_URL } from '../config'
 import ProductCard from '../components/ProductCard'
+import QuantitySelector from '../components/QuantitySelector'
 import Seo from '../components/Seo'
 
 const DISPONIBILIDAD_SCHEMA = {
@@ -33,6 +34,16 @@ export default function ProductoDetalle() {
   const [cantidad, setCantidad] = useState(1)
   const { agregar, setAbierto } = useCarrito()
   const toast = useToast()
+  // Guarda simple contra doble clic: agregar()/handleComprar() son síncronos,
+  // así que un doble clic real (sin esperar respuesta de red) podría sumar
+  // la cantidad dos veces antes de que React vuelva a renderizar.
+  const bloqueadoRef = useRef(false)
+  const conGuardia = (fn) => () => {
+    if (bloqueadoRef.current) return
+    bloqueadoRef.current = true
+    fn()
+    setTimeout(() => { bloqueadoRef.current = false }, 400)
+  }
 
   useEffect(() => {
     setCargando(true)
@@ -75,17 +86,21 @@ export default function ProductoDetalle() {
   const maxCantidad = Math.max(1, producto.stock_disponible)
   const whatsappConfigurado = WHATSAPP_NUMBER && WHATSAPP_NUMBER !== '549XXXXXXXXXX'
 
-  const handleAgregar = () => {
+  const handleAgregar = conGuardia(() => {
     if (sinStock) return
     agregar(producto, cantidad)
-    toast({ message: `${producto.nombre} agregado al carrito`, type: 'success' })
-  }
+    toast({
+      message: `${producto.nombre} agregado al carrito`,
+      type: 'success',
+      action: { label: 'Ver carrito', onClick: () => setAbierto(true) },
+    })
+  })
 
-  const handleComprar = () => {
+  const handleComprar = conGuardia(() => {
     if (sinStock) return
     agregar(producto, cantidad)
     setAbierto(true)
-  }
+  })
 
   const handleConsultarWhatsapp = () => {
     const msg = `Hola! Te consulto por "${producto.nombre}" (${formatPrecio(producto.precio)})`
@@ -199,20 +214,12 @@ export default function ProductoDetalle() {
           {!sinStock && (
             <div className="flex items-center gap-3">
               <span className="text-sm text-text-secondary font-medium">Cantidad</span>
-              <div className="flex items-center gap-1.5 bg-background-secondary rounded-xl border border-border-soft px-1 py-0.5">
-                <button
-                  onClick={() => setCantidad(c => Math.max(1, c - 1))}
-                  aria-label="Restar una unidad"
-                  className="w-9 h-9 flex items-center justify-center text-text-secondary hover:text-brand-primary-700 font-bold text-lg leading-none transition-colors"
-                >−</button>
-                <span className="w-6 text-center font-bold text-sm text-text-primary" aria-label={`Cantidad: ${cantidad}`}>{cantidad}</span>
-                <button
-                  onClick={() => setCantidad(c => Math.min(maxCantidad, c + 1))}
-                  disabled={cantidad >= maxCantidad}
-                  aria-label="Sumar una unidad"
-                  className="w-9 h-9 flex items-center justify-center text-text-secondary hover:text-brand-primary-700 font-bold text-lg leading-none transition-colors disabled:opacity-30"
-                >+</button>
-              </div>
+              <QuantitySelector
+                cantidad={cantidad}
+                max={maxCantidad}
+                nombreProducto={producto.nombre}
+                onCambiar={setCantidad}
+              />
             </div>
           )}
 
@@ -221,7 +228,7 @@ export default function ProductoDetalle() {
               onClick={handleAgregar}
               disabled={sinStock}
               className={`py-3.5 rounded-xl font-semibold text-sm transition-colors duration-250 min-h-[44px] ${
-                sinStock ? 'bg-background-secondary text-text-secondary cursor-not-allowed' : 'bg-brand-primary-50 text-brand-primary-700 hover:bg-brand-primary-100 border border-brand-primary-200'
+                sinStock ? 'bg-background-secondary text-text-secondary cursor-not-allowed' : 'bg-brand-primary-700 hover:bg-brand-primary-800 text-white'
               }`}
             >
               {sinStock ? 'Sin stock' : '+ Agregar al carrito'}
@@ -230,7 +237,7 @@ export default function ProductoDetalle() {
               onClick={handleComprar}
               disabled={sinStock}
               className={`py-3.5 rounded-xl font-semibold text-sm transition-colors duration-250 min-h-[44px] ${
-                sinStock ? 'bg-background-secondary text-text-secondary cursor-not-allowed' : 'bg-brand-primary-700 hover:bg-brand-primary-800 text-white'
+                sinStock ? 'bg-background-secondary text-text-secondary cursor-not-allowed' : 'bg-brand-primary-50 text-brand-primary-700 hover:bg-brand-primary-100 border border-brand-primary-200'
               }`}
             >
               Comprar ahora
