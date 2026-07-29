@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { productosService, pedidosService, categoriasService } from '../services/api'
 import { TIENDA_NOMBRE } from '../config'
+import Seo from '../components/Seo'
 
 function formatPrecio(n) {
   return '$' + Number(n).toLocaleString('es-AR', { maximumFractionDigits: 0 })
@@ -57,29 +58,29 @@ function ModalCategoria({ categoria, onCerrar, onGuardado }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div role="dialog" aria-modal="true" aria-labelledby="modal-categoria-titulo" className="bg-white w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl">
+      <div role="dialog" aria-modal="true" aria-labelledby="modal-categoria-titulo" className="bg-surface w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl">
         <div className="p-5 border-b flex items-center justify-between">
-          <h3 id="modal-categoria-titulo" className="font-bold text-gray-800">{categoria?.id ? 'Editar categoría' : 'Nueva categoría'}</h3>
-          <button onClick={onCerrar} aria-label="Cerrar" className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+          <h3 id="modal-categoria-titulo" className="font-sans font-bold text-text-primary">{categoria?.id ? 'Editar categoría' : 'Nueva categoría'}</h3>
+          <button onClick={onCerrar} aria-label="Cerrar" className="text-text-secondary hover:text-text-primary text-xl">✕</button>
         </div>
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           <div>
-            <label htmlFor="categoria-nombre" className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
+            <label htmlFor="categoria-nombre" className="block text-sm font-medium text-text-primary mb-1">Nombre *</label>
             <input id="categoria-nombre" value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))}
               className="input-field" required placeholder="ej. Sahumerios" />
           </div>
           <div>
-            <label htmlFor="categoria-icono" className="block text-sm font-medium text-gray-700 mb-1">Ícono (emoji)</label>
+            <label htmlFor="categoria-icono" className="block text-sm font-medium text-text-primary mb-1">Ícono (emoji)</label>
             <input id="categoria-icono" value={form.icono} onChange={e => setForm(f => ({ ...f, icono: e.target.value }))}
               className="input-field" placeholder="ej. 🌿" maxLength={4} />
           </div>
           <div>
-            <label htmlFor="categoria-descripcion" className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+            <label htmlFor="categoria-descripcion" className="block text-sm font-medium text-text-primary mb-1">Descripción</label>
             <textarea id="categoria-descripcion" value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))}
               className="input-field resize-none" rows={2} placeholder="Se muestra en la página pública de la categoría" />
           </div>
           <div>
-            <label htmlFor="categoria-orden" className="block text-sm font-medium text-gray-700 mb-1">Orden de aparición</label>
+            <label htmlFor="categoria-orden" className="block text-sm font-medium text-text-primary mb-1">Orden de aparición</label>
             <input id="categoria-orden" type="number" min="0" value={form.orden}
               onChange={e => setForm(f => ({ ...f, orden: parseInt(e.target.value) || 0 }))}
               className="input-field" />
@@ -87,10 +88,10 @@ function ModalCategoria({ categoria, onCerrar, onGuardado }) {
           <label className="flex items-center gap-3 cursor-pointer">
             <input type="checkbox" checked={form.activo}
               onChange={e => setForm(f => ({ ...f, activo: e.target.checked }))}
-              className="w-5 h-5 accent-tierra-600" />
-            <span className="text-sm font-medium text-gray-700">Activa (visible en tienda)</span>
+              className="w-5 h-5 accent-brand-primary-600" />
+            <span className="text-sm font-medium text-text-primary">Activa (visible en tienda)</span>
           </label>
-          {error && <p className="text-red-600 text-sm bg-red-50 p-3 rounded-xl">{error}</p>}
+          {error && <p className="text-error text-sm bg-error-bg p-3 rounded-xl">{error}</p>}
           <button type="submit" disabled={cargando} className="btn-primary w-full">
             {cargando ? 'Guardando...' : 'Guardar categoría'}
           </button>
@@ -159,25 +160,25 @@ function ModalProducto({ producto, categorias, onCerrar, onGuardado }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div role="dialog" aria-modal="true" aria-labelledby="modal-producto-titulo" className="bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl max-h-[95vh] overflow-y-auto">
+      <div role="dialog" aria-modal="true" aria-labelledby="modal-producto-titulo" className="bg-surface w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl max-h-[95vh] overflow-y-auto">
         <div className="p-5 border-b flex items-center justify-between">
-          <h3 id="modal-producto-titulo" className="font-bold text-gray-800">{producto?.id ? 'Editar producto' : 'Nuevo producto'}</h3>
-          <button onClick={onCerrar} aria-label="Cerrar" className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+          <h3 id="modal-producto-titulo" className="font-sans font-bold text-text-primary">{producto?.id ? 'Editar producto' : 'Nuevo producto'}</h3>
+          <button onClick={onCerrar} aria-label="Cerrar" className="text-text-secondary hover:text-text-primary text-xl">✕</button>
         </div>
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {/* Imagen */}
           <div>
-            <label id="producto-imagen-label" className="block text-sm font-medium text-gray-700 mb-2">Imagen</label>
+            <label id="producto-imagen-label" className="block text-sm font-medium text-text-primary mb-2">Imagen</label>
             <div
               onClick={() => fileRef.current.click()}
               onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileRef.current.click() } }}
               role="button" tabIndex={0} aria-labelledby="producto-imagen-label"
-              className="aspect-video bg-tierra-50 border-2 border-dashed border-tierra-200 rounded-xl flex items-center justify-center cursor-pointer hover:bg-tierra-100 transition-colors overflow-hidden"
+              className="aspect-video bg-brand-primary-50 border-2 border-dashed border-brand-primary-200 rounded-xl flex items-center justify-center cursor-pointer hover:bg-brand-primary-100 transition-colors overflow-hidden"
             >
               {preview ? (
                 <img src={preview} alt="" className="w-full h-full object-cover" />
               ) : (
-                <div className="text-center text-tierra-400">
+                <div className="text-center text-brand-primary-400">
                   <p className="text-3xl">📷</p>
                   <p className="text-sm mt-1">Tocá para subir foto</p>
                 </div>
@@ -187,31 +188,31 @@ function ModalProducto({ producto, categorias, onCerrar, onGuardado }) {
           </div>
 
           <div>
-            <label htmlFor="producto-nombre" className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
+            <label htmlFor="producto-nombre" className="block text-sm font-medium text-text-primary mb-1">Nombre *</label>
             <input id="producto-nombre" value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))}
               className="input-field" required />
           </div>
           <div>
-            <label htmlFor="producto-descripcion" className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+            <label htmlFor="producto-descripcion" className="block text-sm font-medium text-text-primary mb-1">Descripción</label>
             <textarea id="producto-descripcion" value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))}
               className="input-field resize-none" rows={3} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="producto-precio" className="block text-sm font-medium text-gray-700 mb-1">Precio * ($)</label>
+              <label htmlFor="producto-precio" className="block text-sm font-medium text-text-primary mb-1">Precio * ($)</label>
               <input id="producto-precio" type="number" step="0.01" min="0.01" value={form.precio}
                 onChange={e => setForm(f => ({ ...f, precio: e.target.value }))}
                 className="input-field" required />
             </div>
             <div>
-              <label htmlFor="producto-stock" className="block text-sm font-medium text-gray-700 mb-1">Stock real</label>
+              <label htmlFor="producto-stock" className="block text-sm font-medium text-text-primary mb-1">Stock real</label>
               <input id="producto-stock" type="number" min="0" value={form.stock}
                 onChange={e => setForm(f => ({ ...f, stock: e.target.value }))}
                 className="input-field" />
             </div>
           </div>
           <div>
-            <label htmlFor="producto-categoria" className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+            <label htmlFor="producto-categoria" className="block text-sm font-medium text-text-primary mb-1">Categoría</label>
             <select id="producto-categoria" value={form.categoria} onChange={e => setForm(f => ({ ...f, categoria: e.target.value || '' }))}
               className="input-field">
               <option value="">Sin categoría</option>
@@ -223,11 +224,11 @@ function ModalProducto({ producto, categorias, onCerrar, onGuardado }) {
           <label className="flex items-center gap-3 cursor-pointer">
             <input type="checkbox" checked={form.activo}
               onChange={e => setForm(f => ({ ...f, activo: e.target.checked }))}
-              className="w-5 h-5 accent-tierra-600" />
-            <span className="text-sm font-medium text-gray-700">Producto activo (visible en tienda)</span>
+              className="w-5 h-5 accent-brand-primary-600" />
+            <span className="text-sm font-medium text-text-primary">Producto activo (visible en tienda)</span>
           </label>
 
-          {error && <p className="text-red-600 text-sm bg-red-50 p-3 rounded-xl">{error}</p>}
+          {error && <p className="text-error text-sm bg-error-bg p-3 rounded-xl">{error}</p>}
           <button type="submit" disabled={cargando} className="btn-primary w-full">
             {cargando ? 'Guardando...' : 'Guardar producto'}
           </button>
@@ -320,12 +321,12 @@ export default function Admin() {
   }
 
   const ESTADO_COLORES = {
-    pendiente:  'bg-amber-100 text-amber-700',
-    confirmado: 'bg-tierra-100 text-tierra-700',
-    enviado:    'bg-blue-100 text-blue-700',
-    entregado:  'bg-green-100 text-green-700',
-    cancelado:  'bg-gray-100 text-gray-600',
-    vencido:    'bg-red-100 text-red-600',
+    pendiente:  'bg-warning-bg text-warning',
+    confirmado: 'bg-brand-primary-100 text-brand-primary-700',
+    enviado:    'bg-brand-secondary-100 text-brand-secondary-800',
+    entregado:  'bg-success-bg text-success',
+    cancelado:  'bg-background-secondary text-text-secondary',
+    vencido:    'bg-error-bg text-error',
   }
 
   const estadoBadge = p => (
@@ -340,17 +341,18 @@ export default function Admin() {
   const tabLabel = t => t === 'pedidos' ? '📦 Pedidos' : t === 'productos' ? '🌿 Productos' : '🏷️ Categorías'
 
   return (
-    <div className="min-h-screen bg-tierra-50">
+    <div className="min-h-screen bg-brand-primary-50">
+      <Seo title="Administración" path="/admin" noindex />
       {/* Header */}
-      <header className="bg-white border-b border-tierra-100 shadow-sm sticky top-0 z-20">
+      <header className="bg-surface border-b border-brand-primary-100 shadow-sm sticky top-0 z-20">
         <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <img src="/logo.jpg" alt="Logo" className="w-8 h-8 object-cover rounded-full" />
-            <span className="font-semibold text-tierra-800 text-sm">Admin · {TIENDA_NOMBRE}</span>
+            <span className="font-semibold text-brand-primary-800 text-sm">Admin · {TIENDA_NOMBRE}</span>
           </div>
           <div className="flex items-center gap-3">
-            <a href="/" target="_blank" rel="noopener" className="text-sm text-tierra-600 hover:text-tierra-800">Ver tienda ↗</a>
-            <button onClick={handleLogout} className="text-sm text-gray-500 hover:text-red-600 transition-colors">Salir</button>
+            <a href="/" target="_blank" rel="noopener" className="text-sm text-brand-primary-600 hover:text-brand-primary-800">Ver tienda ↗</a>
+            <button onClick={handleLogout} className="text-sm text-text-secondary hover:text-error transition-colors">Salir</button>
           </div>
         </div>
       </header>
@@ -361,7 +363,7 @@ export default function Admin() {
           {['pedidos', 'productos', 'categorias'].map(t => (
             <button key={t} onClick={() => setTab(t)}
               className={`flex-shrink-0 px-5 py-2.5 rounded-xl font-medium text-sm transition-colors ${
-                tab === t ? 'bg-tierra-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                tab === t ? 'bg-brand-primary-600 text-white' : 'bg-surface text-text-secondary border border-border-soft hover:bg-background-secondary'
               }`}
             >
               {tabLabel(t)}
@@ -380,13 +382,13 @@ export default function Admin() {
                   <option key={e} value={e}>{e.charAt(0).toUpperCase() + e.slice(1)}</option>
                 ))}
               </select>
-              <button onClick={cargarPedidos} className="text-sm text-tierra-600 hover:text-tierra-800 flex-shrink-0">↻ Actualizar</button>
+              <button onClick={cargarPedidos} className="text-sm text-brand-primary-600 hover:text-brand-primary-800 flex-shrink-0">↻ Actualizar</button>
             </div>
 
             {cargando ? (
-              <div className="text-center py-10 text-tierra-400">Cargando...</div>
+              <div className="text-center py-10 text-brand-primary-400">Cargando...</div>
             ) : pedidosFiltrados.length === 0 ? (
-              <div className="text-center py-10 text-gray-400">
+              <div className="text-center py-10 text-text-secondary">
                 No hay pedidos{filtroEstado ? ` con estado "${filtroEstado}"` : ''}.
               </div>
             ) : (
@@ -396,23 +398,23 @@ export default function Admin() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-bold text-gray-800">{p.codigo}</span>
+                        <span className="font-bold text-text-primary">{p.codigo}</span>
                         {estadoBadge(p)}
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-text-secondary">
                           {p.metodo_pago === 'mercadopago' ? '💳 MP' : '💬 WA'}
                         </span>
                       </div>
-                      {p.cliente_nombre    && <p className="text-sm text-gray-600 mt-0.5">👤 {p.cliente_nombre}</p>}
-                      {p.cliente_email     && <p className="text-xs text-gray-400">📧 {p.cliente_email}</p>}
-                      {p.cliente_telefono  && <p className="text-xs text-gray-400">📱 {p.cliente_telefono}</p>}
-                      {p.cliente_direccion && <p className="text-xs text-gray-400">📍 {p.cliente_direccion}</p>}
-                      <p className="text-xs text-gray-400 mt-0.5">{formatHora(p.created_at)}</p>
+                      {p.cliente_nombre    && <p className="text-sm text-text-secondary mt-0.5">👤 {p.cliente_nombre}</p>}
+                      {p.cliente_email     && <p className="text-xs text-text-secondary">📧 {p.cliente_email}</p>}
+                      {p.cliente_telefono  && <p className="text-xs text-text-secondary">📱 {p.cliente_telefono}</p>}
+                      {p.cliente_direccion && <p className="text-xs text-text-secondary">📍 {p.cliente_direccion}</p>}
+                      <p className="text-xs text-text-secondary mt-0.5">{formatHora(p.created_at)}</p>
                     </div>
-                    <span className="font-bold text-tierra-700 text-lg flex-shrink-0">{formatPrecio(p.total)}</span>
+                    <span className="font-bold text-brand-primary-700 text-lg flex-shrink-0">{formatPrecio(p.total)}</span>
                   </div>
 
                   {/* Ítems */}
-                  <ul className="text-sm text-gray-600 space-y-0.5 border-t border-gray-100 pt-2">
+                  <ul className="text-sm text-text-secondary space-y-0.5 border-t border-border-soft pt-2">
                     {p.items?.map(i => (
                       <li key={i.id}>{i.producto_nombre} x{i.cantidad} — {formatPrecio(i.subtotal)}</li>
                     ))}
@@ -420,7 +422,7 @@ export default function Admin() {
 
                   {/* Historial de estados */}
                   {p.historial?.length > 0 && (
-                    <div className="text-xs text-gray-400 border-t border-gray-50 pt-2 space-y-0.5">
+                    <div className="text-xs text-text-secondary border-t border-border-soft pt-2 space-y-0.5">
                       {p.historial.map(h => (
                         <p key={h.id}>
                           <span className="font-semibold capitalize">{h.estado}</span>
@@ -435,24 +437,24 @@ export default function Admin() {
                   {p.estado === 'pendiente' && (
                     <div className="flex gap-2 pt-1">
                       <button onClick={() => handleConfirmar(p.id)}
-                        className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-xl text-sm transition-colors">
+                        className="flex-1 bg-success hover:brightness-110 text-white font-semibold py-2 rounded-xl text-sm transition-colors">
                         ✓ Confirmar
                       </button>
                       <button onClick={() => handleCancelar(p.id)}
-                        className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 rounded-xl text-sm transition-colors">
+                        className="flex-1 bg-background-secondary hover:bg-border-soft text-text-primary font-semibold py-2 rounded-xl text-sm transition-colors">
                         ✕ Cancelar
                       </button>
                     </div>
                   )}
                   {p.estado === 'confirmado' && (
                     <button onClick={() => handleMarcarEnviado(p.id)}
-                      className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-xl text-sm transition-colors">
+                      className="w-full bg-brand-secondary-600 hover:bg-brand-secondary-700 text-white font-semibold py-2 rounded-xl text-sm transition-colors">
                       🚚 Marcar como enviado
                     </button>
                   )}
                   {p.estado === 'enviado' && (
                     <button onClick={() => handleMarcarEntregado(p.id)}
-                      className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-xl text-sm transition-colors">
+                      className="w-full bg-success hover:brightness-110 text-white font-semibold py-2 rounded-xl text-sm transition-colors">
                       ✓ Marcar como entregado
                     </button>
                   )}
@@ -466,42 +468,42 @@ export default function Admin() {
         {tab === 'productos' && (
           <div className="space-y-3 pb-6">
             <div className="flex items-center justify-between">
-              <h2 className="font-bold text-gray-800">Productos ({productos.length})</h2>
+              <h2 className="font-sans font-bold text-text-primary">Productos ({productos.length})</h2>
               <button onClick={() => setModalProducto({})} className="btn-primary text-sm py-2 px-4">+ Nuevo</button>
             </div>
             {cargando ? (
-              <div className="text-center py-10 text-tierra-400">Cargando...</div>
+              <div className="text-center py-10 text-brand-primary-400">Cargando...</div>
             ) : (
               productos.map(p => (
                 <div key={p.id} className={`card p-4 flex items-center gap-3 ${!p.activo ? 'opacity-50' : ''}`}>
                   {(p.imagen_thumbnail_url || p.imagen_url) ? (
                     <img src={p.imagen_thumbnail_url || p.imagen_url} alt={p.nombre} width={56} height={56} loading="lazy" className="w-14 h-14 object-cover rounded-lg flex-shrink-0" />
                   ) : (
-                    <div className="w-14 h-14 bg-tierra-100 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">🌿</div>
+                    <div className="w-14 h-14 bg-brand-primary-100 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">🌿</div>
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-medium text-gray-800 truncate">{p.nombre}</p>
-                      {!p.activo && <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">Inactivo</span>}
+                      <p className="font-medium text-text-primary truncate">{p.nombre}</p>
+                      {!p.activo && <span className="text-xs text-text-secondary bg-background-secondary px-2 py-0.5 rounded-full">Inactivo</span>}
                       {p.categoria_nombre && (
-                        <span className="text-xs text-tierra-600 bg-tierra-50 px-2 py-0.5 rounded-full">{p.categoria_nombre}</span>
+                        <span className="text-xs text-brand-primary-600 bg-brand-primary-50 px-2 py-0.5 rounded-full">{p.categoria_nombre}</span>
                       )}
                     </div>
-                    <p className="text-tierra-700 font-bold">{formatPrecio(p.precio)}</p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-brand-primary-700 font-bold">{formatPrecio(p.precio)}</p>
+                    <p className="text-xs text-text-secondary">
                       Stock real: {p.stock} · Libre: {p.stock_disponible}
                       {p.stock !== p.stock_disponible && (
-                        <span className="text-amber-500 ml-1">({p.stock - p.stock_disponible} reservado)</span>
+                        <span className="text-warning ml-1">({p.stock - p.stock_disponible} reservado)</span>
                       )}
                     </p>
                   </div>
                   <div className="flex flex-col gap-1 flex-shrink-0">
                     <button onClick={() => setModalProducto(p)}
-                      className="text-xs bg-tierra-50 hover:bg-tierra-100 text-tierra-700 px-3 py-1.5 rounded-lg transition-colors">
+                      className="text-xs bg-brand-primary-50 hover:bg-brand-primary-100 text-brand-primary-700 px-3 py-1.5 rounded-lg transition-colors">
                       Editar
                     </button>
                     <button onClick={() => handleEliminarProducto(p.id)}
-                      className="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg transition-colors">
+                      className="text-xs bg-error-bg hover:bg-error-bg text-error px-3 py-1.5 rounded-lg transition-colors">
                       Eliminar
                     </button>
                   </div>
@@ -515,13 +517,13 @@ export default function Admin() {
         {tab === 'categorias' && (
           <div className="space-y-3 pb-6">
             <div className="flex items-center justify-between">
-              <h2 className="font-bold text-gray-800">Categorías ({categorias.length})</h2>
+              <h2 className="font-sans font-bold text-text-primary">Categorías ({categorias.length})</h2>
               <button onClick={() => setModalCategoria({})} className="btn-primary text-sm py-2 px-4">+ Nueva</button>
             </div>
             {cargando ? (
-              <div className="text-center py-10 text-tierra-400">Cargando...</div>
+              <div className="text-center py-10 text-brand-primary-400">Cargando...</div>
             ) : categorias.length === 0 ? (
-              <div className="text-center py-10 text-gray-400">
+              <div className="text-center py-10 text-text-secondary">
                 <p className="text-4xl mb-3">🏷️</p>
                 <p>No hay categorías todavía.</p>
                 <p className="text-sm mt-1">Creá una para organizar tus productos.</p>
@@ -531,21 +533,21 @@ export default function Admin() {
                 <div key={c.id} className="card p-4 flex items-center gap-3">
                   <span className="text-3xl flex-shrink-0 w-10 text-center">{c.icono || '🏷️'}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-800">{c.nombre}</p>
-                    <p className="text-xs text-gray-400">slug: {c.slug} · orden: {c.orden}</p>
+                    <p className="font-semibold text-text-primary">{c.nombre}</p>
+                    <p className="text-xs text-text-secondary">slug: {c.slug} · orden: {c.orden}</p>
                   </div>
                   <span className={`text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${
-                    c.activo ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                    c.activo ? 'bg-success-bg text-success' : 'bg-background-secondary text-text-secondary'
                   }`}>
                     {c.activo ? 'Activa' : 'Inactiva'}
                   </span>
                   <div className="flex flex-col gap-1 flex-shrink-0">
                     <button onClick={() => setModalCategoria(c)}
-                      className="text-xs bg-tierra-50 hover:bg-tierra-100 text-tierra-700 px-3 py-1.5 rounded-lg transition-colors">
+                      className="text-xs bg-brand-primary-50 hover:bg-brand-primary-100 text-brand-primary-700 px-3 py-1.5 rounded-lg transition-colors">
                       Editar
                     </button>
                     <button onClick={() => handleEliminarCategoria(c.id)}
-                      className="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg transition-colors">
+                      className="text-xs bg-error-bg hover:bg-error-bg text-error px-3 py-1.5 rounded-lg transition-colors">
                       Eliminar
                     </button>
                   </div>
