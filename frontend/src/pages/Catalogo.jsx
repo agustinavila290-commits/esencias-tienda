@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import api, { productosService, categoriasService } from '../services/api'
 import ProductCard from '../components/ProductCard'
 import Seo from '../components/Seo'
@@ -14,15 +14,66 @@ const JSON_LD_ORGANIZATION = {
   description: 'Sahumerios artesanales elaborados con ingredientes naturales.',
 }
 
+// Beneficios reales del negocio — ver barra superior (Layout.jsx) y lógica
+// de reserva/seguimiento ya implementada. No agregar ninguno que no esté
+// efectivamente cumplido.
+const BENEFICIOS = [
+  {
+    titulo: 'Stock actualizado',
+    texto: 'La disponibilidad que ves es la real, calculada al momento.',
+    icono: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+        <rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a4 4 0 018 0v2" />
+      </svg>
+    ),
+  },
+  {
+    titulo: 'Compra segura',
+    texto: 'Reservamos tu stock por una hora mientras coordinás el pago.',
+    icono: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+        <path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" /><path d="M9 12l2 2 4-4" />
+      </svg>
+    ),
+  },
+  {
+    titulo: 'Atención personalizada',
+    texto: 'Coordinamos tu pedido por WhatsApp, de persona a persona.',
+    icono: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+        <path d="M21 11.5a8.5 8.5 0 01-12.3 7.6L3 20l1.1-5.4A8.5 8.5 0 1121 11.5z" />
+      </svg>
+    ),
+  },
+  {
+    titulo: 'Seguimiento del pedido',
+    texto: 'Cada pedido tiene un código y una página para ver su estado.',
+    icono: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+        <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" />
+      </svg>
+    ),
+  },
+]
+
+// Fondos alternados para las tarjetas de categoría — no hay campo de imagen
+// en el modelo Categoria (ver serializers.py), así que se resuelve con la
+// paleta de marca en vez de simular una foto que no existe.
+const FONDOS_CATEGORIA = [
+  'from-brand-primary-700 to-brand-primary-900',
+  'from-accent-600 to-accent-800',
+  'from-brand-secondary-600 to-brand-secondary-800',
+]
+
 function ProductSkeleton() {
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-sm flex flex-col">
-      <div className="aspect-square bg-gray-200 animate-pulse" />
+    <div className="bg-surface rounded-card overflow-hidden shadow-soft flex flex-col">
+      <div className="aspect-square bg-background-secondary animate-pulse" />
       <div className="p-3 space-y-2">
-        <div className="h-3.5 bg-gray-200 rounded-full animate-pulse" />
-        <div className="h-3.5 bg-gray-200 rounded-full animate-pulse w-2/3" />
-        <div className="h-5 bg-gray-200 rounded-full animate-pulse w-1/2 mt-2" />
-        <div className="h-10 bg-gray-200 rounded-xl animate-pulse mt-1" />
+        <div className="h-3.5 bg-background-secondary rounded-full animate-pulse" />
+        <div className="h-3.5 bg-background-secondary rounded-full animate-pulse w-2/3" />
+        <div className="h-5 bg-background-secondary rounded-full animate-pulse w-1/2 mt-2" />
+        <div className="h-10 bg-background-secondary rounded-xl animate-pulse mt-1" />
       </div>
     </div>
   )
@@ -131,40 +182,109 @@ export default function Catalogo() {
         jsonLd={JSON_LD_ORGANIZATION}
       />
       {/* Hero */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-tierra-900 via-tierra-800 to-tierra-600 text-white">
+      <div className="relative overflow-hidden bg-gradient-to-br from-brand-primary-900 via-brand-primary-800 to-brand-primary-600 text-white">
         <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-white/5 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-12 -left-12 w-64 h-64 rounded-full bg-naturaleza-800/20 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-12 -left-12 w-64 h-64 rounded-full bg-accent-800/20 blur-3xl pointer-events-none" />
         <div className="absolute top-0 left-0 right-0 bottom-0 opacity-10 pointer-events-none"
           style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
 
-        <div className="relative max-w-4xl mx-auto px-6 py-12 sm:py-18 flex items-center gap-8">
+        <div className="relative max-w-site mx-auto px-4 sm:px-8 py-16 sm:py-24 flex items-center gap-10">
           <img
             src="/logo.jpg"
-            alt="Esencias de la naturaleza"
-            className="hidden sm:block w-32 h-32 object-cover rounded-full flex-shrink-0 border-4 border-white/20 shadow-2xl"
+            alt={TIENDA_NOMBRE}
+            className="hidden sm:block w-36 h-36 object-cover rounded-full flex-shrink-0 border-4 border-white/20 shadow-elevated"
           />
-          <div>
-            <p className="text-tierra-300 text-xs font-semibold tracking-[0.2em] uppercase mb-4">
+          <div className="max-w-xl">
+            <p className="text-brand-primary-200 text-xs font-semibold tracking-[0.2em] uppercase mb-4">
               Tienda online
             </p>
-            <h1 className="font-display text-4xl sm:text-5xl font-bold leading-tight text-white">
-              Esencias<br />
-              <span className="text-tierra-300">de la naturaleza</span>
+            <h1 className="font-display text-hero font-semibold leading-tight text-white">
+              Aromas que transforman<br className="hidden sm:block" /> tus espacios
             </h1>
-            <p className="mt-4 text-tierra-200/80 text-base max-w-xs leading-relaxed">
-              Sahumerios artesanales elaborados con ingredientes naturales. Pedís
-              por WhatsApp o pagás online con Mercado Pago.
+            <p className="mt-5 text-brand-primary-100 text-base sm:text-lg max-w-md leading-relaxed">
+              Sahumerios y esencias artesanales elaborados con ingredientes naturales,
+              para acompañar momentos de calma, energía y bienestar en tu hogar.
             </p>
-            <div className="mt-6 flex items-center gap-2 text-tierra-400 text-sm">
-              <span className="inline-block animate-bounce">↓</span>
-              <span>Ver productos</span>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <a href="#productos" className="btn-primary bg-white text-brand-primary-800 hover:bg-brand-primary-50 active:bg-brand-primary-100">
+                Explorar productos
+              </a>
+              {categorias.length > 0 && (
+                <a href="#categorias" className="inline-flex items-center justify-center gap-2 min-h-[44px] px-6 py-3 rounded-xl font-semibold text-white border border-white/30 hover:bg-white/10 transition-colors duration-250">
+                  Ver categorías
+                </a>
+              )}
             </div>
           </div>
         </div>
       </div>
 
+      {/* Beneficios */}
+      <div className="max-w-site mx-auto px-4 sm:px-8 py-10 grid grid-cols-2 sm:grid-cols-4 gap-6">
+        {BENEFICIOS.map(b => (
+          <div key={b.titulo} className="flex flex-col items-start gap-2">
+            <span className="w-11 h-11 rounded-full bg-brand-primary-100 text-brand-primary-700 flex items-center justify-center flex-shrink-0">
+              {b.icono}
+            </span>
+            <p className="font-semibold text-text-primary text-sm">{b.titulo}</p>
+            <p className="text-text-secondary text-xs leading-relaxed">{b.texto}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Categorías destacadas */}
+      {categorias.length > 0 && (
+        <div id="categorias" className="max-w-site mx-auto px-4 sm:px-8 pb-12 scroll-mt-20">
+          <div className="flex items-end justify-between mb-5">
+            <h2 className="font-display text-h2 font-semibold text-text-primary">Categorías</h2>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {categorias.map((cat, i) => (
+              <Link
+                key={cat.slug}
+                to={`/categoria/${cat.slug}`}
+                className={`group relative overflow-hidden rounded-card shadow-soft hover:shadow-elevated transition-all duration-250 aspect-[4/3] flex flex-col justify-end p-4 text-white bg-gradient-to-br ${FONDOS_CATEGORIA[i % FONDOS_CATEGORIA.length]} ${i === 0 ? 'col-span-2 row-span-2 aspect-square sm:aspect-[4/3]' : ''}`}
+              >
+                {cat.icono && (
+                  <span className="absolute top-4 right-4 text-3xl opacity-80" aria-hidden="true">{cat.icono}</span>
+                )}
+                <span className="font-display text-lg font-semibold group-hover:translate-x-0.5 transition-transform duration-250">
+                  {cat.nombre}
+                </span>
+                {cat.descripcion && (
+                  <span className="text-xs text-white/80 mt-1 line-clamp-2">{cat.descripcion}</span>
+                )}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Banner editorial */}
+      <div className="bg-background-secondary">
+        <div className="max-w-site mx-auto px-4 sm:px-8 py-14 grid sm:grid-cols-2 gap-8 items-center">
+          <div className="order-2 sm:order-1">
+            <p className="text-accent-700 text-xs font-semibold tracking-[0.2em] uppercase mb-3">Hecho a mano</p>
+            <h2 className="font-display text-h2 font-semibold text-text-primary leading-tight">
+              Elaborados con cuidado, pensados para tu bienestar
+            </h2>
+            <p className="mt-4 text-text-secondary leading-relaxed max-w-md">
+              Cada producto se prepara de forma artesanal con ingredientes naturales,
+              cuidando cada detalle desde la elaboración hasta que llega a tu casa.
+            </p>
+            <Link to="/sobre-nosotros" className="btn-secondary inline-flex mt-6">
+              Conocer más
+            </Link>
+          </div>
+          <div className="order-1 sm:order-2 aspect-[4/3] rounded-card bg-gradient-to-br from-brand-secondary-200 to-brand-secondary-400 flex items-center justify-center overflow-hidden shadow-soft">
+            <img src="/logo.jpg" alt="" className="w-28 h-28 object-cover rounded-full shadow-elevated border-4 border-white/50" />
+          </div>
+        </div>
+      </div>
+
       {/* Catálogo */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div id="productos" className="max-w-site mx-auto px-4 sm:px-8 py-10 scroll-mt-16">
+        <h2 className="font-display text-h2 font-semibold text-text-primary mb-5">Nuestros productos</h2>
         {/* Tabs de categorías */}
         {categorias.length > 0 && (
           <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide -mx-4 px-4">
