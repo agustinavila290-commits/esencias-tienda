@@ -1,3 +1,29 @@
+# Rollback — Fase 10 (despliegue del 2026-07-29)
+
+Renovación estética integral del frontend público y ajustes de coherencia en el admin.
+Solo cambios de frontend — sin migraciones, sin cambios de contrato de API.
+
+Commit anterior (el que corría en prod antes de este despliegue): `a4b08a4`
+Release anterior (symlink `frontend/current` antes del deploy): `20260728_122807_a4b08a4`
+Release desplegada en esta actualización: `20260729_084459_55d2bf0`
+
+Rollback más simple y de menor riesgo (estructura de releases atómicos ya activa):
+
+```bash
+ln -sfn /srv/esencias/frontend/releases/20260728_122807_a4b08a4 /srv/esencias/frontend/current
+sudo systemctl reload nginx   # no hace falta reiniciar Gunicorn: no hubo cambios de backend
+```
+
+Si por algún motivo la release anterior ya no está en `frontend/releases/` (se conservan solo las
+últimas 5), volver el código a `a4b08a4` y reconstruir:
+
+```bash
+cd /srv/esencias && sudo -u esencias git checkout a4b08a4
+bash /srv/esencias/deploy/update.sh
+```
+
+---
+
 # Rollback — Fase 9 (despliegue del 2026-07-28)
 
 Backup pre-despliegue en el servidor: `/srv/esencias-backups/pre-fase9_20260728_112119/`
