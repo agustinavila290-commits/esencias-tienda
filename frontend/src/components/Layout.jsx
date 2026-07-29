@@ -113,7 +113,10 @@ export default function Layout({ children }) {
   const isHome = location.pathname === '/'
   // En el inicio el header se integra con el hero (fondo oscuro) hasta que
   // el usuario hace scroll; en el resto de las páginas siempre es sólido.
-  const headerTransparente = isHome && !scrolled
+  // Con el menú móvil abierto forzamos el estado sólido: es más simple y
+  // predecible que mantener la superposición transparente con contenido
+  // encima (el dropdown necesita una superficie sólida para leerse bien).
+  const headerTransparente = isHome && !scrolled && !menuAbierto
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -185,9 +188,12 @@ export default function Layout({ children }) {
     <div className="min-h-screen flex flex-col">
       <TopBar />
 
-      {/* Header */}
+      {/* Header — en el inicio se superpone al hero de verdad (margen negativo
+          que "jala" a <main> por debajo del propio header) en vez de solo
+          quedar transparente en su lugar del flujo normal, que dejaría ver
+          el fondo de la página y no el hero. */}
       <header
-        className={`sticky top-0 z-30 transition-colors duration-250 ${
+        className={`sticky top-0 z-30 transition-colors duration-250 ${headerTransparente ? '-mb-16' : ''} ${
           headerTransparente
             ? 'bg-transparent'
             : 'bg-surface-elevated/95 backdrop-blur-md border-b border-border-soft shadow-soft'
