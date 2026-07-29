@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useRef } from 'react'
 
 const ToastContext = createContext(null)
 
@@ -32,19 +32,45 @@ const STYLES = {
   info:    'bg-text-primary text-white',
 }
 
-function ToastContainer({ toasts, onDismiss }) {
+function Toast({ t, onDismiss, onPause, onResume }) {
+  return (
+    <div
+      role="status"
+      onMouseEnter={() => onPause(t.id)}
+      onMouseLeave={() => onResume(t.id)}
+      onFocus={() => onPause(t.id)}
+      onBlur={() => onResume(t.id)}
+      className={`animate-fade-in-up pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl text-sm font-medium select-none ${STYLES[t.type] || STYLES.info}`}
+    >
+      {ICONS[t.type] || ICONS.info}
+      <span className="flex-1">{t.message}</span>
+      {t.action && (
+        <button
+          onClick={() => { t.action.onClick(); onDismiss(t.id) }}
+          className="font-bold underline underline-offset-2 decoration-white/50 hover:decoration-white flex-shrink-0"
+        >
+          {t.action.label}
+        </button>
+      )}
+      <button onClick={() => onDismiss(t.id)} aria-label="Cerrar notificación" className="flex-shrink-0 opacity-70 hover:opacity-100 p-0.5">
+        <svg viewBox="0 0 20 20" className="w-3.5 h-3.5 fill-current" aria-hidden="true">
+          <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+        </svg>
+      </button>
+    </div>
+  )
+}
+
+function ToastContainer({ toasts, onDismiss, onPause, onResume }) {
   if (toasts.length === 0) return null
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-2 w-full max-w-sm px-4 pointer-events-none">
+    <div
+      aria-live="polite"
+      aria-atomic="false"
+      className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-2 w-full max-w-sm px-4 pointer-events-none"
+    >
       {toasts.map(t => (
-        <div
-          key={t.id}
-          onClick={() => onDismiss(t.id)}
-          className={`animate-fade-in-up pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl text-sm font-medium cursor-pointer select-none ${STYLES[t.type] || STYLES.info}`}
-        >
-          {ICONS[t.type] || ICONS.info}
-          <span className="flex-1">{t.message}</span>
-        </div>
+        <Toast key={t.id} t={t} onDismiss={onDismiss} onPause={onPause} onResume={onResume} />
       ))}
     </div>
   )
@@ -52,21 +78,45 @@ function ToastContainer({ toasts, onDismiss }) {
 
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([])
-
-  const toast = useCallback(({ message, type = 'success', duration = 3000 }) => {
-    const id = Date.now() + Math.random()
-    setToasts(prev => [...prev, { id, message, type }])
-    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), duration)
-  }, [])
+  const timers = useRef({}) // { [id]: { restante, inicio, handle } }
 
   const dismiss = useCallback((id) => {
+    clearTimeout(timers.current[id]?.handle)
+    delete timers.current[id]
     setToasts(prev => prev.filter(t => t.id !== id))
   }, [])
+
+  const iniciarTimer = useCallback((id, ms) => {
+    const handle = setTimeout(() => dismiss(id), ms)
+    timers.current[id] = { restante: ms, inicio: Date.now(), handle }
+  }, [dismiss])
+
+  const toast = useCallback(({ message, type = 'success', duration = 3000, action = null }) => {
+    const id = Date.now() + Math.random()
+    setToasts(prev => [...prev, { id, message, type, action }])
+    iniciarTimer(id, duration)
+  }, [iniciarTimer])
+
+  // Al recibir hover/foco se pausa el auto-cierre; al salir, se retoma con
+  // el tiempo restante (no se reinicia el conteo completo).
+  const pause = useCallback((id) => {
+    const t = timers.current[id]
+    if (!t) return
+    clearTimeout(t.handle)
+    t.restante -= Date.now() - t.inicio
+  }, [])
+
+  const resume = useCallback((id) => {
+    const t = timers.current[id]
+    if (!t) return
+    t.inicio = Date.now()
+    t.handle = setTimeout(() => dismiss(id), Math.max(t.restante, 300))
+  }, [dismiss])
 
   return (
     <ToastContext.Provider value={toast}>
       {children}
-      <ToastContainer toasts={toasts} onDismiss={dismiss} />
+      <ToastContainer toasts={toasts} onDismiss={dismiss} onPause={pause} onResume={resume} />
     </ToastContext.Provider>
   )
 }
