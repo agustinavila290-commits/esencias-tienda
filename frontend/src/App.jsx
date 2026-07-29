@@ -44,7 +44,7 @@ function ProtectedRoute({ children }) {
 }
 
 function CargandoAdmin() {
-  return <div className="min-h-screen flex items-center justify-center text-tierra-400">Cargando panel...</div>
+  return <div className="min-h-screen flex items-center justify-center text-brand-primary-400">Cargando panel...</div>
 }
 
 export default function App() {

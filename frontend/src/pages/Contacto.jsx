@@ -96,7 +96,7 @@ export default function Contacto() {
                 href={INSTAGRAM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-4 p-4 bg-surface rounded-xl border border-border-soft hover:border-loto-300 hover:shadow-sm transition-all"
+                className="flex items-center gap-4 p-4 bg-surface rounded-xl border border-border-soft hover:border-accent-300 hover:shadow-sm transition-all"
               >
                 <div
                   className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"

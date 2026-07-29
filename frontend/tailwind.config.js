@@ -38,46 +38,6 @@ export default {
         success: { DEFAULT: '#3F6B51', bg: '#E9F1EB' },
         warning: { DEFAULT: '#A36A35', bg: '#F5EBE0' },
         error:   { DEFAULT: '#A64B40', bg: '#F5E6E4' },
-
-        /* === Paleta anterior — se retira progresivamente durante la migración
-           por etapas (ver deploy/ROLLBACK.md Fase 10); no eliminar hasta que
-           ningún componente la referencie. === */
-        tierra: {
-          50:  '#f0f8f9',
-          100: '#d5ecee',
-          200: '#acd8db',
-          300: '#7bbdc4',
-          400: '#4da3ab',
-          500: '#2d8890',
-          600: '#1d6e77',
-          700: '#155661',
-          800: '#0f3f49',
-          900: '#092d35',
-        },
-        naturaleza: {
-          50:  '#f2f7f2',
-          100: '#e0ecdf',
-          200: '#c2d9c0',
-          300: '#97bc94',
-          400: '#6a9a67',
-          500: '#4a7d47',
-          600: '#386337',
-          700: '#2d4f2c',
-          800: '#254025',
-          900: '#1e341e',
-        },
-        loto: {
-          50:  '#fef1f6',
-          100: '#fbd5e9',
-          200: '#f6abd3',
-          300: '#ee79b8',
-          400: '#e24e9b',
-          500: '#ce2d7f',
-          600: '#b01e65',
-          700: '#8e164e',
-          800: '#6c1039',
-          900: '#4c0b27',
-        },
       },
       fontFamily: {
         sans:    ['"DM Sans"', 'system-ui', 'sans-serif'],
