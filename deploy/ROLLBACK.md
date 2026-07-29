@@ -1,3 +1,27 @@
+# Rollback — Mejora del carrito (despliegue del 2026-07-29)
+
+Rediseño integral del carrito (drawer lateral, revalidación contra el backend,
+deshacer al eliminar). Solo cambios de frontend — sin migraciones, sin cambios
+de contrato de API.
+
+Commit anterior: `cefe99c`
+Release anterior (symlink `frontend/current` antes del deploy): `20260729_090134_cefe99c`
+Release desplegada en esta actualización: `20260729_094019_50119f0`
+
+```bash
+ln -sfn /srv/esencias/frontend/releases/20260729_090134_cefe99c /srv/esencias/frontend/current
+sudo systemctl reload nginx   # no hace falta reiniciar Gunicorn: no hubo cambios de backend
+```
+
+Si la release anterior ya no está (se conservan solo las últimas 5):
+
+```bash
+cd /srv/esencias && sudo -u esencias git checkout cefe99c
+bash /srv/esencias/deploy/update.sh
+```
+
+---
+
 # Rollback — Fase 10 (despliegue del 2026-07-29)
 
 Renovación estética integral del frontend público y ajustes de coherencia en el admin.
