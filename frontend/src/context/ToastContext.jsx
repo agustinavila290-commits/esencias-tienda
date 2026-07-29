@@ -26,10 +26,10 @@ const ICONS = {
 }
 
 const STYLES = {
-  success: 'bg-tierra-700 text-white',
-  error:   'bg-red-600 text-white',
-  warning: 'bg-amber-500 text-white',
-  info:    'bg-gray-800 text-white',
+  success: 'bg-brand-primary-700 text-white',
+  error:   'bg-error text-white',
+  warning: 'bg-warning text-white',
+  info:    'bg-text-primary text-white',
 }
 
 function ToastContainer({ toasts, onDismiss }) {

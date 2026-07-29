@@ -13,7 +13,7 @@ export default function BarraCarrito() {
     <div className="fixed bottom-0 left-0 right-0 z-40 p-3">
       <button
         onClick={() => setAbierto(true)}
-        className="w-full flex items-center gap-3 bg-gradient-to-r from-tierra-700 to-tierra-600 hover:from-tierra-800 hover:to-tierra-700 active:from-tierra-900 active:to-tierra-800 text-white font-semibold py-3.5 px-4 rounded-2xl shadow-lg transition-all duration-150 active:scale-[0.99]"
+        className="w-full flex items-center gap-3 bg-gradient-to-r from-brand-primary-700 to-brand-primary-600 hover:from-brand-primary-800 hover:to-brand-primary-700 active:from-brand-primary-900 active:to-brand-primary-800 text-white font-semibold py-3.5 px-4 rounded-2xl shadow-elevated transition-all duration-250 active:scale-[0.99]"
       >
         <span className="bg-white/20 rounded-xl px-2.5 py-0.5 text-sm font-bold min-w-[28px] text-center">
           {totalItems}

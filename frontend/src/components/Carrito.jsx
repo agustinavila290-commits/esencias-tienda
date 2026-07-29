@@ -132,27 +132,27 @@ export default function Carrito() {
         role="dialog"
         aria-modal="true"
         aria-label="Carrito de compras"
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl max-h-[92vh] flex flex-col"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-surface-elevated rounded-t-3xl shadow-elevated max-h-[92vh] flex flex-col"
       >
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
-          <div className="w-10 h-1 bg-gray-200 rounded-full" />
+          <div className="w-10 h-1 bg-border-soft rounded-full" />
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-border-soft flex-shrink-0">
           <div className="flex items-center gap-2">
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-tierra-600">
+            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-brand-primary-600">
               <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96C5 16.1 6.1 17 7 17h11v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63H19c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0023.45 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
             </svg>
-            <h2 className="font-bold text-gray-800 text-lg">Tu carrito</h2>
+            <h2 className="font-display font-semibold text-text-primary text-lg">Tu carrito</h2>
             {items.length > 0 && (
-              <span className="bg-tierra-100 text-tierra-700 text-xs font-bold px-2 py-0.5 rounded-full">
+              <span className="bg-brand-primary-100 text-brand-primary-700 text-xs font-bold px-2 py-0.5 rounded-full">
                 {items.reduce((a, i) => a + i.cantidad, 0)}
               </span>
             )}
           </div>
-          <button onClick={cerrarTodo} aria-label="Cerrar carrito" className="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+          <button onClick={cerrarTodo} aria-label="Cerrar carrito" className="p-2 rounded-full hover:bg-background-secondary text-text-secondary hover:text-text-primary transition-colors">
             <svg viewBox="0 0 20 20" className="w-5 h-5 fill-current" aria-hidden="true">
               <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
             </svg>
@@ -164,15 +164,15 @@ export default function Carrito() {
           <div className="px-5 py-6 space-y-4 overflow-y-auto">
             <div className="text-center">
               <p className="text-4xl mb-2">✅</p>
-              <h3 className="font-bold text-gray-800 text-lg">¡Reserva creada!</h3>
-              <p className="text-gray-500 text-sm mt-1">
-                Código: <span className="font-mono font-bold text-tierra-700">{pedidoCreado.codigo}</span>
+              <h3 className="font-display font-semibold text-text-primary text-lg">¡Reserva creada!</h3>
+              <p className="text-text-secondary text-sm mt-1">
+                Código: <span className="font-mono font-bold text-brand-primary-700">{pedidoCreado.codigo}</span>
               </p>
             </div>
 
             <ReservaCountdown expiresAt={pedidoCreado.expires_at} estado={pedidoCreado.estado} />
 
-            <p className="text-sm text-gray-500 text-center">
+            <p className="text-sm text-text-secondary text-center">
               Ya te abrimos WhatsApp para coordinar. Si se cerró, podés escribirnos
               de nuevo con el código de arriba, o seguir el estado del pedido acá:
             </p>
@@ -184,7 +184,7 @@ export default function Carrito() {
             >
               Ver seguimiento del pedido
             </Link>
-            <button onClick={cerrarTodo} className="w-full py-2.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
+            <button onClick={cerrarTodo} className="w-full py-2.5 text-sm text-text-secondary hover:text-text-primary transition-colors">
               Seguir comprando
             </button>
           </div>
@@ -193,38 +193,41 @@ export default function Carrito() {
         {/* Items */}
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2.5 min-h-0">
           {items.length === 0 ? (
-            <div className="text-center py-14 text-gray-400">
-              <svg viewBox="0 0 24 24" className="w-14 h-14 fill-gray-200 mx-auto mb-3">
+            <div className="text-center py-14 text-text-secondary">
+              <svg viewBox="0 0 24 24" className="w-14 h-14 fill-border-soft mx-auto mb-3">
                 <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96C5 16.1 6.1 17 7 17h11v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63H19c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0023.45 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
               </svg>
-              <p className="font-medium">El carrito está vacío</p>
-              <p className="text-sm mt-1">Agregá productos desde el catálogo</p>
+              <p className="font-medium text-text-primary">Tu carrito todavía está vacío</p>
+              <p className="text-sm mt-1">Descubrí aromas para transformar tus espacios.</p>
+              <Link to="/" onClick={() => setAbierto(false)} className="btn-secondary inline-flex mt-4">
+                Explorar productos
+              </Link>
             </div>
           ) : (
             items.map(item => (
-              <div key={item.id} className="flex items-center gap-3 bg-tierra-50 rounded-2xl p-3">
+              <div key={item.id} className="flex items-center gap-3 bg-background-secondary rounded-card p-3">
                 {item.imagen_url ? (
-                  <img src={item.imagen_url} alt={item.nombre} className="w-16 h-16 object-cover rounded-xl flex-shrink-0 border border-tierra-100" />
+                  <img src={item.imagen_url} alt={item.nombre} className="w-16 h-16 object-cover rounded-xl flex-shrink-0 border border-border-soft" />
                 ) : (
-                  <div className="w-16 h-16 bg-tierra-100 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">🌿</div>
+                  <div className="w-16 h-16 bg-brand-primary-50 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">🌿</div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm text-gray-800 truncate">{item.nombre}</p>
-                  <p className="text-tierra-500 text-xs mt-0.5">{formatPrecio(item.precio)} c/u</p>
+                  <p className="font-semibold text-sm text-text-primary truncate">{item.nombre}</p>
+                  <p className="text-text-secondary text-xs mt-0.5">{formatPrecio(item.precio)} c/u</p>
                   {item.cantidad > 1 && (
-                    <p className="text-tierra-700 font-bold text-sm">{formatPrecio(item.precio * item.cantidad)}</p>
+                    <p className="text-brand-primary-700 font-bold text-sm">{formatPrecio(item.precio * item.cantidad)}</p>
                   )}
                 </div>
                 <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                  <button onClick={() => quitar(item.id)} className="text-gray-300 hover:text-red-400 transition-colors" aria-label="Eliminar">
+                  <button onClick={() => quitar(item.id)} className="text-text-secondary hover:text-error transition-colors" aria-label="Eliminar">
                     <svg viewBox="0 0 20 20" className="w-4 h-4 fill-current">
                       <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
                     </svg>
                   </button>
-                  <div className="flex items-center gap-1.5 bg-white rounded-xl border border-gray-200 px-1 py-0.5">
-                    <button onClick={() => cambiarCantidad(item.id, item.cantidad - 1)} aria-label={`Restar una unidad de ${item.nombre}`} className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-tierra-700 font-bold text-lg leading-none transition-colors">−</button>
-                    <span className="w-5 text-center font-bold text-sm text-gray-800" aria-label={`Cantidad: ${item.cantidad}`}>{item.cantidad}</span>
-                    <button onClick={() => cambiarCantidad(item.id, Math.min(item.cantidad + 1, item.stock_disponible))} disabled={item.cantidad >= item.stock_disponible} aria-label={`Sumar una unidad de ${item.nombre}`} className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-tierra-700 font-bold text-lg leading-none transition-colors disabled:opacity-30">+</button>
+                  <div className="flex items-center gap-1.5 bg-surface-elevated rounded-xl border border-border-soft px-1 py-0.5">
+                    <button onClick={() => cambiarCantidad(item.id, item.cantidad - 1)} aria-label={`Restar una unidad de ${item.nombre}`} className="w-7 h-7 flex items-center justify-center text-text-secondary hover:text-brand-primary-700 font-bold text-lg leading-none transition-colors">−</button>
+                    <span className="w-5 text-center font-bold text-sm text-text-primary" aria-label={`Cantidad: ${item.cantidad}`}>{item.cantidad}</span>
+                    <button onClick={() => cambiarCantidad(item.id, Math.min(item.cantidad + 1, item.stock_disponible))} disabled={item.cantidad >= item.stock_disponible} aria-label={`Sumar una unidad de ${item.nombre}`} className="w-7 h-7 flex items-center justify-center text-text-secondary hover:text-brand-primary-700 font-bold text-lg leading-none transition-colors disabled:opacity-30">+</button>
                   </div>
                 </div>
               </div>
@@ -234,10 +237,10 @@ export default function Carrito() {
 
         {/* Footer checkout */}
         {items.length > 0 && (
-          <div className="px-4 pt-3 pb-5 border-t border-gray-100 space-y-2.5 flex-shrink-0">
+          <div className="px-4 pt-3 pb-5 border-t border-border-soft space-y-2.5 flex-shrink-0">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-gray-500 text-sm font-medium">Total del pedido</span>
-              <span className="text-tierra-700 font-bold text-2xl">{formatPrecio(totalPrecio)}</span>
+              <span className="text-text-secondary text-sm font-medium">Total del pedido</span>
+              <span className="text-brand-primary-700 font-bold text-2xl">{formatPrecio(totalPrecio)}</span>
             </div>
 
             {/* Datos del cliente */}
@@ -251,12 +254,12 @@ export default function Carrito() {
               onChange={e => setClienteDireccion(e.target.value)} className="input-field text-sm" />
 
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-700 text-sm whitespace-pre-line">
+              <div className="bg-error-bg border border-error/30 rounded-xl p-3 text-error text-sm whitespace-pre-line">
                 {error}
               </div>
             )}
 
-            <p className="text-xs text-gray-400 text-center leading-relaxed">
+            <p className="text-xs text-text-secondary text-center leading-relaxed">
               Al confirmar reservamos tu pedido y tu stock por <strong>1 hora</strong>.
               Si en ese tiempo no se coordina el pago, la reserva vence automáticamente
               y el stock vuelve a estar disponible para otros clientes.

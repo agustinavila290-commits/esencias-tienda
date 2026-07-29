@@ -58,7 +58,7 @@ export default function ReservaCountdown({ expiresAt, estado, onExpirar }) {
     <div
       role="status"
       className={`rounded-xl p-3 text-sm font-medium flex items-start gap-2 ${
-        vencida ? 'bg-red-50 text-red-600' : porVencer ? 'bg-amber-50 text-amber-700' : 'bg-tierra-50 text-tierra-700'
+        vencida ? 'bg-error-bg text-error' : porVencer ? 'bg-warning-bg text-warning' : 'bg-brand-primary-50 text-brand-primary-700'
       }`}
     >
       <span className="flex-shrink-0">{vencida ? '⏰' : '⏱'}</span>
