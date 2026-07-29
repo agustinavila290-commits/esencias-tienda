@@ -33,41 +33,41 @@ export default function ProductCard({ producto }) {
   }
 
   return (
-    <div className={`group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 ${sinStock ? 'opacity-60' : ''}`}>
+    <div className={`group flex flex-col bg-surface rounded-card overflow-hidden shadow-soft hover:shadow-elevated border border-border-soft transition-all duration-250 hover:-translate-y-0.5 ${sinStock ? 'opacity-70' : ''}`}>
 
       {/* Imagen */}
-      <Link to={href} className="block relative aspect-square overflow-hidden bg-tierra-50">
+      <Link to={href} className="block relative aspect-[4/5] overflow-hidden bg-background-secondary">
         {imagenGrilla ? (
           <>
             <img
               src={imagenGrilla}
               alt={producto.nombre}
               width={400}
-              height={400}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+              height={500}
+              className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-out"
               loading="lazy"
               decoding="async"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-250" />
           </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-tierra-50 p-8">
+          <div className="w-full h-full flex items-center justify-center bg-background-secondary p-8">
             <img src="/iconos/svg/06_sahumerio.svg" alt="" className="w-full h-full object-contain opacity-20" />
           </div>
         )}
 
         {producto.categoria_nombre && (
-          <span className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-tierra-700 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+          <span className="absolute top-2 left-2 badge bg-surface-elevated/90 backdrop-blur-sm text-text-secondary shadow-soft">
             {producto.categoria_nombre}
           </span>
         )}
 
         {sinStock ? (
-          <span className="absolute top-2 right-2 bg-gray-800/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+          <span className="absolute top-2 right-2 badge bg-text-primary/80 text-white">
             {etiquetaSinStock}
           </span>
         ) : pocasUnidades ? (
-          <span className="absolute top-2 right-2 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+          <span className="absolute top-2 right-2 badge-warning shadow-soft">
             ¡Últimas!
           </span>
         ) : null}
@@ -76,20 +76,20 @@ export default function ProductCard({ producto }) {
       {/* Info */}
       <div className="p-3 flex flex-col gap-2 flex-1">
         <Link to={href}>
-          <h3 className="font-medium text-gray-800 text-sm leading-snug hover:text-tierra-700 transition-colors line-clamp-2">
+          <h3 className="font-medium text-text-primary text-sm leading-snug hover:text-brand-primary-700 transition-colors line-clamp-2">
             {producto.nombre}
           </h3>
         </Link>
 
-        <p className="text-tierra-700 font-bold text-base mt-auto">
+        <p className="text-brand-primary-700 font-bold text-base mt-auto">
           {formatPrecio(producto.precio)}
         </p>
 
         <button
           onClick={handleAgregar}
           disabled={sinStock}
-          className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 min-h-[44px] active:scale-95
-            ${sinStock ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-tierra-600 hover:bg-tierra-700 text-white'}`}
+          className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all duration-250 min-h-[44px] active:scale-95
+            ${sinStock ? 'bg-background-secondary text-text-secondary cursor-not-allowed' : 'bg-brand-primary-600 hover:bg-brand-primary-700 text-white'}`}
         >
           {sinStock ? etiquetaSinStock : '+ Agregar'}
         </button>

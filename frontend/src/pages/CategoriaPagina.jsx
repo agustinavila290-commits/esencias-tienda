@@ -64,11 +64,11 @@ export default function CategoriaPagina() {
 
   if (cargando) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="h-8 w-48 bg-gray-200 rounded-full animate-pulse mb-6" />
+      <div className="max-w-site mx-auto px-4 sm:px-8 py-8">
+        <div className="h-8 w-48 bg-background-secondary rounded-full animate-pulse mb-6" />
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="bg-gray-200 rounded-2xl aspect-square animate-pulse" />
+            <div key={i} className="bg-background-secondary rounded-card aspect-[4/5] animate-pulse" />
           ))}
         </div>
       </div>
@@ -79,7 +79,7 @@ export default function CategoriaPagina() {
     return (
       <div className="max-w-md mx-auto px-4 py-16 text-center">
         <p className="text-5xl mb-4">🔍</p>
-        <p className="text-gray-600">No encontramos esta categoría.</p>
+        <p className="text-text-secondary">No encontramos esta categoría.</p>
         <Link to="/" className="btn-primary mt-4 inline-flex">← Volver al catálogo</Link>
       </div>
     )
@@ -96,21 +96,21 @@ export default function CategoriaPagina() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 pb-14">
+    <div className="max-w-site mx-auto px-4 sm:px-8 py-6 pb-14">
       <Seo
         title={categoria.nombre}
         description={categoria.descripcion || `${categoria.nombre} — ${TIENDA_NOMBRE}`}
         path={path}
         jsonLd={jsonLdBreadcrumb}
       />
-      <Link to="/" className="text-tierra-600 hover:text-tierra-800 text-sm">← Todas las categorías</Link>
+      <Link to="/" className="text-brand-primary-700 hover:text-brand-primary-900 text-sm">← Todas las categorías</Link>
 
       <div className="mt-3 mb-5">
-        <h1 className="font-display text-3xl font-bold text-tierra-800">
+        <h1 className="font-display text-h1 font-semibold text-text-primary">
           {categoria.icono ? `${categoria.icono} ` : ''}{categoria.nombre}
         </h1>
         {categoria.descripcion && (
-          <p className="text-gray-500 text-sm mt-1 max-w-xl">{categoria.descripcion}</p>
+          <p className="text-text-secondary text-sm mt-1 max-w-xl">{categoria.descripcion}</p>
         )}
       </div>
 
@@ -119,7 +119,7 @@ export default function CategoriaPagina() {
           value={orden}
           aria-label="Ordenar por"
           onChange={e => actualizarParam('orden', e.target.value === 'nombre' ? '' : e.target.value)}
-          className="border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-600 bg-white focus:outline-none focus:border-tierra-400"
+          className="border border-border-soft rounded-xl px-3 py-2 text-sm text-text-secondary bg-surface focus:outline-none focus:border-brand-primary-400"
         >
           <option value="nombre">A–Z</option>
           <option value="precio_asc">Menor precio</option>
@@ -127,25 +127,26 @@ export default function CategoriaPagina() {
           <option value="nuevos">Más nuevos</option>
         </select>
 
-        <label className="flex items-center gap-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-xl px-3 py-2 cursor-pointer">
+        <label className="flex items-center gap-2 text-sm text-text-secondary bg-surface border border-border-soft rounded-xl px-3 py-2 cursor-pointer">
           <input
             type="checkbox"
             checked={disponible === '1'}
             onChange={e => actualizarParam('disponible', e.target.checked ? '1' : '')}
-            className="accent-tierra-600"
+            className="accent-brand-primary-600"
           />
           Solo disponibles
         </label>
 
-        <span className="text-xs text-gray-400 ml-auto font-medium uppercase tracking-wide">
+        <span className="text-xs text-text-secondary ml-auto font-medium uppercase tracking-wide">
           {count} producto{count !== 1 ? 's' : ''}
         </span>
       </div>
 
       {productos.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-16 text-text-secondary">
           <p className="text-4xl mb-3">🌿</p>
-          <p>No hay productos en esta categoría por ahora.</p>
+          <p className="font-medium text-text-primary">No hay productos en esta categoría por ahora.</p>
+          <Link to="/" className="btn-secondary inline-flex mt-4">← Volver al catálogo</Link>
         </div>
       ) : (
         <>

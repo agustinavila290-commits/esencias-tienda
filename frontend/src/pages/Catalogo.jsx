@@ -166,7 +166,8 @@ export default function Catalogo() {
   if (error) return (
     <div className="max-w-md mx-auto px-4 py-16 text-center">
       <p className="text-5xl mb-4">😕</p>
-      <p className="text-gray-600">{error}</p>
+      <p className="text-text-secondary">No pudimos cargar esta sección.</p>
+      <p className="text-text-secondary text-sm mt-1">Intentá nuevamente.</p>
       <button onClick={() => window.location.reload()} className="btn-primary mt-4">
         Reintentar
       </button>
@@ -290,10 +291,10 @@ export default function Catalogo() {
           <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide -mx-4 px-4">
             <button
               onClick={() => actualizarParam('categoria', '')}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-250 whitespace-nowrap ${
                 tabActivo === 'todos'
-                  ? 'bg-tierra-700 text-white shadow-sm'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:border-tierra-300 hover:text-tierra-700'
+                  ? 'bg-brand-primary-700 text-white shadow-soft'
+                  : 'bg-surface text-text-secondary border border-border-soft hover:border-brand-primary-300 hover:text-brand-primary-700'
               }`}
             >
               Todos
@@ -302,10 +303,10 @@ export default function Catalogo() {
               <button
                 key={cat.slug}
                 onClick={() => actualizarParam('categoria', cat.slug)}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-250 whitespace-nowrap ${
                   tabActivo === cat.slug
-                    ? 'bg-tierra-700 text-white shadow-sm'
-                    : 'bg-white text-gray-600 border border-gray-200 hover:border-tierra-300 hover:text-tierra-700'
+                    ? 'bg-brand-primary-700 text-white shadow-soft'
+                    : 'bg-surface text-text-secondary border border-border-soft hover:border-brand-primary-300 hover:text-brand-primary-700'
                 }`}
               >
                 {cat.icono ? `${cat.icono} ` : ''}{cat.nombre}
@@ -317,7 +318,7 @@ export default function Catalogo() {
         {/* Búsqueda y orden */}
         <div className="flex flex-wrap gap-2 mb-3">
           <div className="relative flex-1 min-w-[160px]">
-            <svg aria-hidden="true" viewBox="0 0 20 20" className="w-4 h-4 fill-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+            <svg aria-hidden="true" viewBox="0 0 20 20" className="w-4 h-4 fill-text-secondary absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
               <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd"/>
             </svg>
             <input
@@ -326,14 +327,14 @@ export default function Catalogo() {
               aria-label="Buscar productos"
               value={busquedaInput}
               onChange={e => setBusquedaInput(e.target.value)}
-              className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-tierra-400 focus:ring-1 focus:ring-tierra-400 bg-white"
+              className="w-full pl-9 pr-3 py-2.5 border border-border-soft rounded-xl text-sm focus:outline-none focus:border-brand-primary-400 focus:ring-1 focus:ring-brand-primary-400 bg-surface"
             />
           </div>
           <select
             value={orden}
             aria-label="Ordenar por"
             onChange={e => actualizarParam('orden', e.target.value === 'nombre' ? '' : e.target.value)}
-            className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-600 bg-white focus:outline-none focus:border-tierra-400 flex-shrink-0"
+            className="border border-border-soft rounded-xl px-3 py-2.5 text-sm text-text-secondary bg-surface focus:outline-none focus:border-brand-primary-400 flex-shrink-0"
           >
             <option value="nombre">A–Z</option>
             <option value="precio_asc">Menor precio</option>
@@ -344,12 +345,12 @@ export default function Catalogo() {
 
         {/* Filtros: disponibilidad + rango de precio */}
         <div className="flex flex-wrap items-center gap-2 mb-4">
-          <label className="flex items-center gap-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-xl px-3 py-2 cursor-pointer">
+          <label className="flex items-center gap-2 text-sm text-text-secondary bg-surface border border-border-soft rounded-xl px-3 py-2 cursor-pointer">
             <input
               type="checkbox"
               checked={disponible === '1'}
               onChange={e => actualizarParam('disponible', e.target.checked ? '1' : '')}
-              className="accent-tierra-600"
+              className="accent-brand-primary-600"
             />
             Solo disponibles
           </label>
@@ -357,15 +358,15 @@ export default function Catalogo() {
             type="number" min="0" placeholder="Precio mín." aria-label="Precio mínimo"
             value={precioMin}
             onChange={e => actualizarParam('precio_min', e.target.value)}
-            className="w-28 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-tierra-400"
+            className="w-28 border border-border-soft rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-primary-400"
           />
           <input
             type="number" min="0" placeholder="Precio máx." aria-label="Precio máximo"
             value={precioMax}
             onChange={e => actualizarParam('precio_max', e.target.value)}
-            className="w-28 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-tierra-400"
+            className="w-28 border border-border-soft rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-primary-400"
           />
-          <span className="text-xs text-gray-400 ml-auto font-medium uppercase tracking-wide whitespace-nowrap">
+          <span className="text-xs text-text-secondary ml-auto font-medium uppercase tracking-wide whitespace-nowrap">
             {count} producto{count !== 1 ? 's' : ''}
           </span>
         </div>
@@ -376,9 +377,10 @@ export default function Catalogo() {
             {Array.from({ length: 8 }).map((_, i) => <ProductSkeleton key={i} />)}
           </div>
         ) : productos.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-text-secondary">
             <p className="text-4xl mb-3">🔍</p>
-            <p>{busquedaUrl ? `No hay resultados para "${busquedaUrl}".` : 'No hay productos con estos filtros.'}</p>
+            <p className="font-medium text-text-primary">No encontramos productos con esos filtros.</p>
+            <p className="text-sm mt-1">Probá cambiando la búsqueda o eliminando algún filtro.</p>
           </div>
         ) : (
           <>
