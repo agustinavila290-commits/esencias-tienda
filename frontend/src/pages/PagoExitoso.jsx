@@ -7,17 +7,17 @@ export default function PagoExitoso() {
   const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hola! Acabo de pagar el pedido ${codigo} por Mercado Pago. ¿Me confirmás la entrega? 🌿`)}`
 
   return (
-    <div className="min-h-screen bg-tierra-50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-3xl shadow-sm border border-tierra-100 max-w-sm w-full p-8 text-center space-y-5">
+    <div className="min-h-screen bg-brand-primary-50 flex items-center justify-center px-4">
+      <div className="bg-surface rounded-3xl shadow-sm border border-brand-primary-100 max-w-sm w-full p-8 text-center space-y-5">
         <div className="text-6xl">🎉</div>
-        <h1 className="text-2xl font-bold text-tierra-800">¡Pago aprobado!</h1>
+        <h1 className="text-2xl font-bold text-brand-primary-800">¡Pago aprobado!</h1>
         {codigo && (
-          <div className="bg-tierra-50 rounded-xl px-4 py-3">
-            <p className="text-xs text-gray-500 mb-1">Código de pedido</p>
-            <p className="font-bold text-tierra-700 text-lg tracking-wide">{codigo}</p>
+          <div className="bg-brand-primary-50 rounded-xl px-4 py-3">
+            <p className="text-xs text-text-secondary mb-1">Código de pedido</p>
+            <p className="font-bold text-brand-primary-700 text-lg tracking-wide">{codigo}</p>
           </div>
         )}
-        <p className="text-gray-600 text-sm">
+        <p className="text-text-secondary text-sm">
           Tu pago fue procesado exitosamente. Te escribiremos por WhatsApp para coordinar la entrega.
         </p>
         <a

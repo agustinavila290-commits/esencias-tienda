@@ -7,17 +7,17 @@ export default function PagoCancelado() {
   const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hola! Tuve un problema al pagar el pedido ${codigo} por Mercado Pago. ¿Me ayudás a coordinar por esta vía? 🌿`)}`
 
   return (
-    <div className="min-h-screen bg-tierra-50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-3xl shadow-sm border border-tierra-100 max-w-sm w-full p-8 text-center space-y-5">
+    <div className="min-h-screen bg-brand-primary-50 flex items-center justify-center px-4">
+      <div className="bg-surface rounded-3xl shadow-sm border border-brand-primary-100 max-w-sm w-full p-8 text-center space-y-5">
         <div className="text-6xl">😕</div>
-        <h1 className="text-2xl font-bold text-gray-800">Pago cancelado</h1>
+        <h1 className="text-2xl font-bold text-text-primary">Pago cancelado</h1>
         {codigo && (
-          <div className="bg-gray-50 rounded-xl px-4 py-3">
-            <p className="text-xs text-gray-500 mb-1">Código de pedido</p>
-            <p className="font-bold text-gray-700 text-lg tracking-wide">{codigo}</p>
+          <div className="bg-background-secondary rounded-xl px-4 py-3">
+            <p className="text-xs text-text-secondary mb-1">Código de pedido</p>
+            <p className="font-bold text-text-primary text-lg tracking-wide">{codigo}</p>
           </div>
         )}
-        <p className="text-gray-600 text-sm">
+        <p className="text-text-secondary text-sm">
           El pago fue cancelado o rechazado. Tu reserva puede seguir activa por hasta 1 hora —
           podés reintentar el pago o coordinar directamente por WhatsApp.
         </p>
